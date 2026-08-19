@@ -1,0 +1,3583 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="4incorp.com helps entrepreneurs form LLCs, corporations, nonprofits, DBAs, and other business entities in all 50 states."
+    />
+    <title>4incorp.com | Register Your Business. Build Your Future.</title>
+    <style>
+      :root {
+        --ink: #101827;
+        --muted: #526173;
+        --line: #d7e2ef;
+        --paper: #ffffff;
+        --soft: #f4f8fc;
+        --blue: #0d55c7;
+        --blue-dark: #083c91;
+        --green: #16834b;
+        --danger: #b42318;
+        --shadow: 0 18px 46px rgba(16, 24, 39, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--soft);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button,
+      select,
+      input[type="checkbox"] {
+        cursor: pointer;
+      }
+
+      :focus-visible {
+        outline: 3px solid rgba(13, 85, 199, 0.3);
+        outline-offset: 2px;
+      }
+
+      .container {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(14px);
+      }
+
+      .nav {
+        min-height: 74px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: baseline;
+        color: #07142c;
+        font-size: 29px;
+        font-weight: 900;
+      }
+
+      .brand .four {
+        color: var(--blue);
+        font-size: 46px;
+        line-height: 1;
+      }
+
+      .brand .inc {
+        color: var(--blue);
+      }
+
+      .brand small {
+        color: var(--blue);
+        font-size: 22px;
+      }
+
+      .nav-links,
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .nav-links {
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .nav-links a:hover {
+        color: var(--blue);
+      }
+
+      .primary,
+      .secondary {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 18px;
+        font-weight: 900;
+      }
+
+      .primary {
+        color: #fff;
+        background: var(--blue);
+      }
+
+      .primary:hover {
+        background: var(--blue-dark);
+      }
+
+      .secondary {
+        color: var(--blue);
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .secondary:hover {
+        border-color: var(--blue);
+        background: #f7faff;
+      }
+
+      .hero {
+        min-height: 670px;
+        display: grid;
+        align-items: center;
+        color: #fff;
+        background:
+          linear-gradient(90deg, rgba(5, 16, 36, 0.93), rgba(5, 16, 36, 0.56)),
+          url("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1800&q=82")
+            center/cover;
+      }
+
+      .hero-inner {
+        padding: 90px 0 64px;
+      }
+
+      .hero-copy {
+        max-width: 790px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        padding: 0 12px;
+        color: #e8f1ff;
+        background: rgba(13, 85, 199, 0.34);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin: 18px 0;
+        max-width: 790px;
+        font-size: clamp(44px, 7vw, 78px);
+        line-height: 0.98;
+      }
+
+      .hero p {
+        max-width: 680px;
+        color: #e7edf6;
+        font-size: 19px;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .trust-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        max-width: 780px;
+        margin-top: 48px;
+      }
+
+      .trust-item {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 14px;
+        background: rgba(5, 16, 36, 0.62);
+        backdrop-filter: blur(10px);
+      }
+
+      .trust-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .trust-item span {
+        color: #dce8f8;
+        font-size: 13px;
+      }
+
+      .section {
+        padding: 68px 0;
+      }
+
+      .section.alt {
+        background: #fff;
+        border-block: 1px solid var(--line);
+      }
+
+      .section-head {
+        margin-bottom: 28px;
+      }
+
+      .section-head h2 {
+        margin-bottom: 7px;
+        font-size: clamp(30px, 4vw, 46px);
+        line-height: 1.08;
+      }
+
+      .section-head p {
+        max-width: 720px;
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .step-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 15px;
+      }
+
+      .step-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 10px 24px rgba(16, 24, 39, 0.06);
+      }
+
+      .step-number {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 14px;
+        border-radius: 50%;
+        color: #fff;
+        background: var(--blue);
+        font-weight: 900;
+      }
+
+      .step-card p {
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .login-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.85fr) minmax(340px, 1.15fr);
+        gap: 28px;
+        align-items: center;
+      }
+
+      .login-copy {
+        border-radius: 12px;
+        color: #fff;
+        background: #07142c;
+        padding: clamp(28px, 5vw, 54px);
+      }
+
+      .login-copy p {
+        color: #dce8f8;
+      }
+
+      .check-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .check-list span::before {
+        content: "✓";
+        margin-right: 9px;
+        color: #77dfa7;
+        font-weight: 900;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        padding: clamp(22px, 4vw, 34px);
+        box-shadow: var(--shadow);
+      }
+
+      .card h3 {
+        margin-bottom: 6px;
+        font-size: 27px;
+      }
+
+      .card-intro {
+        margin-bottom: 22px;
+        color: var(--muted);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .field.full,
+      .form-actions,
+      .form-message,
+      .fieldset {
+        grid-column: 1 / -1;
+      }
+
+      .field label,
+      .field-label {
+        color: #2b3a4c;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .required {
+        color: var(--danger);
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid #b9c8d9;
+        border-radius: 8px;
+        outline: 0;
+        color: var(--ink);
+        background: #fff;
+        padding: 11px 12px;
+      }
+
+      .field textarea {
+        min-height: 112px;
+        resize: vertical;
+      }
+
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(13, 85, 199, 0.12);
+      }
+
+      .field input:user-invalid,
+      .field select:user-invalid,
+      .field textarea:user-invalid {
+        border-color: var(--danger);
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .password-wrap {
+        position: relative;
+      }
+
+      .password-wrap input {
+        padding-right: 72px;
+      }
+
+      .show-password {
+        position: absolute;
+        right: 9px;
+        top: 50%;
+        border: 0;
+        color: var(--blue);
+        background: transparent;
+        transform: translateY(-50%);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .check-field {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: #2b3a4c;
+        font-size: 14px;
+      }
+
+      .check-field input {
+        width: 18px;
+        height: 18px;
+        margin: 2px 0 0;
+        flex: 0 0 auto;
+      }
+
+      .form-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 4px;
+      }
+
+      .form-message {
+        display: none;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-weight: 700;
+      }
+
+      .form-message.success {
+        display: block;
+        color: #0b5f37;
+        border: 1px solid #9bd4b8;
+        background: #edf9f2;
+      }
+
+      .form-message.error {
+        display: block;
+        color: #8f1f17;
+        border: 1px solid #e4aaa5;
+        background: #fff1f0;
+      }
+
+      .application-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 22px;
+        align-items: start;
+      }
+
+      .application-card {
+        padding: clamp(22px, 4vw, 38px);
+      }
+
+      .fieldset {
+        min-width: 0;
+        margin: 0;
+        border: 0;
+        border-top: 1px solid var(--line);
+        padding: 26px 0 0;
+      }
+
+      .fieldset:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .fieldset legend {
+        width: 100%;
+        margin-bottom: 16px;
+        padding: 0;
+        font-size: 21px;
+        font-weight: 900;
+      }
+
+      .review-card {
+        position: sticky;
+        top: 94px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #07142c;
+        padding: 22px;
+        color: #fff;
+      }
+
+      .review-card h3 {
+        margin-bottom: 8px;
+      }
+
+      .review-card p {
+        color: #cbd8eb;
+        font-size: 14px;
+      }
+
+      .review-list {
+        display: grid;
+        gap: 11px;
+        margin: 20px 0;
+      }
+
+      .review-list div {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        padding-bottom: 9px;
+      }
+
+      .review-list span {
+        display: block;
+        color: #9fb1ca;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .review-list strong {
+        display: block;
+        margin-top: 2px;
+        overflow-wrap: anywhere;
+      }
+
+      .review-card .primary {
+        width: 100%;
+      }
+
+      .notice:empty {
+        display: none;
+      }
+
+      .notice {
+        margin-top: 18px;
+        border-left: 4px solid var(--blue);
+        border-radius: 4px;
+        padding: 12px 14px;
+        color: #314158;
+        background: #eef5ff;
+        font-size: 13px;
+      }
+
+      footer {
+        color: #dce8f8;
+        background: #050d1b;
+        padding: 30px 0;
+      }
+
+      .footer-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 50;
+        max-width: min(390px, calc(100% - 36px));
+        transform: translateY(24px);
+        opacity: 0;
+        pointer-events: none;
+        color: #fff;
+        background: #101827;
+        border-radius: 8px;
+        padding: 13px 16px;
+        box-shadow: var(--shadow);
+        transition: 0.18s ease;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      @media (max-width: 980px) {
+        .nav-links {
+          display: none;
+        }
+
+        .step-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .login-layout,
+        .application-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .review-card {
+          position: static;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .nav {
+          min-height: 66px;
+        }
+
+        .brand {
+          font-size: 23px;
+        }
+
+        .brand .four {
+          font-size: 37px;
+        }
+
+        .brand small {
+          font-size: 17px;
+        }
+
+        .nav-actions .secondary {
+          display: none;
+        }
+
+        .hero {
+          min-height: 620px;
+        }
+
+        .hero-inner {
+          padding: 64px 0 48px;
+        }
+
+        .hero-actions,
+        .form-actions {
+          display: grid;
+        }
+
+        .hero-actions .primary,
+        .hero-actions .secondary,
+        .form-actions .primary,
+        .form-actions .secondary {
+          width: 100%;
+        }
+
+        .trust-row,
+        .step-grid,
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+
+      /* Enhanced portal and application status experience */
+      .portal-tabs { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 20px; }
+      .portal-tab { border:1px solid var(--line); background:#f7faff; color:#29415f; border-radius:999px; padding:10px 15px; font-weight:900; cursor:pointer; }
+      .portal-tab.active { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 6px 18px rgba(13,85,199,.2); }
+      .portal-pane { display:none; }
+      .portal-pane.active { display:block; }
+      .portal-badge { display:inline-flex; align-items:center; gap:7px; padding:6px 10px; border-radius:999px; background:#eef5ff; color:var(--blue-dark); font-size:12px; font-weight:900; margin-bottom:12px; }
+      .guest-note { margin-top:12px; padding:12px 14px; border-radius:9px; background:#fff8e8; border:1px solid #efd69a; color:#6f530c; font-size:13px; }
+      .status-section { background:linear-gradient(180deg,#f8fbff,#eef5ff); border-block:1px solid var(--line); }
+      .status-shell { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:24px; align-items:start; }
+      .status-card { border:1px solid var(--line); background:#fff; border-radius:14px; padding:28px; box-shadow:var(--shadow); }
+      .status-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+      .status-chip { display:inline-flex; align-items:center; min-height:30px; border-radius:999px; padding:0 11px; color:#0b5f37; background:#edf9f2; border:1px solid #9bd4b8; font-size:12px; font-weight:900; }
+      .status-track { position:relative; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:26px 0 8px; }
+      .status-step { text-align:center; position:relative; z-index:1; }
+      .status-dot { width:42px; height:42px; display:grid; place-items:center; margin:0 auto 10px; border-radius:50%; background:#e9eef6; color:#68778a; border:3px solid #fff; box-shadow:0 0 0 1px #cfd9e5; font-weight:900; }
+      .status-step.done .status-dot, .status-step.current .status-dot { background:var(--blue); color:#fff; box-shadow:0 0 0 1px var(--blue); }
+      .status-step.current .status-dot { box-shadow:0 0 0 5px rgba(13,85,199,.12); }
+      .status-step strong { display:block; font-size:13px; }
+      .status-step span { color:var(--muted); font-size:11px; }
+      .status-details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:22px; }
+      .status-detail { border:1px solid var(--line); border-radius:10px; padding:14px; background:#fbfdff; }
+      .status-detail span { display:block; color:var(--muted); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.05em; }
+      .status-detail strong { display:block; margin-top:4px; }
+      .timeline { display:grid; gap:14px; }
+      .timeline-item { display:grid; grid-template-columns:12px 1fr; gap:12px; }
+      .timeline-dot { width:10px; height:10px; border-radius:50%; background:var(--blue); margin-top:7px; }
+      .timeline-item p { margin:2px 0 0; color:var(--muted); font-size:13px; }
+      .backend-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+      .backend-card { border:1px solid var(--line); border-radius:12px; background:#fff; padding:18px; }
+      .backend-card strong { display:block; margin-bottom:6px; color:#102a4f; }
+      .backend-card p { margin:0; color:var(--muted); font-size:13px; }
+      .application-mode { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+      .mode-btn { border:1px solid var(--line); background:#fff; border-radius:9px; padding:10px 14px; font-weight:900; color:#29415f; }
+      .mode-btn.active { background:#07142c; color:#fff; border-color:#07142c; }
+      .guest-only-hint { display:none; }
+      body.guest-mode .guest-only-hint { display:block; }
+      body.guest-mode #accountPasswordField, body.guest-mode #confirmPasswordField { display:none; }
+      .cancel-btn { color:#9f261e; border-color:#e8b8b3; }
+      .cancel-btn:hover { background:#fff3f2; border-color:#cf7770; }
+      @media (max-width:980px){ .status-shell{grid-template-columns:1fr;} .backend-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+      @media (max-width:680px){ .status-track{grid-template-columns:1fr; text-align:left;} .status-step{display:grid;grid-template-columns:48px 1fr;text-align:left;align-items:center;} .status-dot{margin:0;} .status-details,.backend-grid{grid-template-columns:1fr;} }
+
+    
+      /* Demo authenticated workspaces */
+      .workspace {
+        display: none;
+        min-height: 100vh;
+        background: #f4f8fc;
+      }
+      .workspace.active { display: block; }
+      .workspace-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: #07142c;
+        color: #fff;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+      }
+      .workspace-topbar .container {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .workspace-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .role-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.12);
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .workspace-logout {
+        border: 1px solid rgba(255,255,255,.25);
+        background: transparent;
+        color: #fff;
+        border-radius: 8px;
+        min-height: 40px;
+        padding: 0 14px;
+        font-weight: 900;
+      }
+      .workspace-body {
+        padding: 34px 0 70px;
+      }
+      .workspace-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .workspace-heading h2 { margin-bottom: 6px; }
+      .workspace-heading p { margin-bottom: 0; color: var(--muted); }
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4,minmax(0,1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .metric-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px;
+        box-shadow: 0 8px 20px rgba(16,24,39,.05);
+      }
+      .metric-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .metric-card strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 30px;
+      }
+      .workspace-grid {
+        display: grid;
+        grid-template-columns: minmax(0,1.5fr) minmax(280px,.7fr);
+        gap: 18px;
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 8px 20px rgba(16,24,39,.05);
+      }
+      .panel h3 { margin-bottom: 14px; }
+      .table-wrap { overflow-x: auto; }
+      .demo-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+      .demo-table th,
+      .demo-table td {
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        padding: 13px 10px;
+        vertical-align: middle;
+      }
+      .demo-table th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .demo-table tr:last-child td { border-bottom: 0; }
+      .tiny-status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 0 9px;
+        border-radius: 999px;
+        background: #eef5ff;
+        color: var(--blue-dark);
+        font-size: 11px;
+        font-weight: 900;
+      }
+      .tiny-status.green { background:#edf9f2; color:#0b5f37; }
+      .tiny-status.orange { background:#fff8e8; color:#6f530c; }
+      .action-link {
+        border: 0;
+        background: transparent;
+        color: var(--blue);
+        font-weight: 900;
+        padding: 0;
+        cursor: pointer;
+      }
+      .quick-list {
+        display: grid;
+        gap: 11px;
+      }
+      .quick-item {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 13px;
+        background: #fbfdff;
+      }
+      .quick-item strong { display:block; margin-bottom:3px; }
+      .quick-item span { color:var(--muted); font-size:12px; }
+      .workspace-note {
+        margin-top: 18px;
+        padding: 12px 14px;
+        border-radius: 9px;
+        background: #fff8e8;
+        border: 1px solid #efd69a;
+        color: #6f530c;
+        font-size: 13px;
+      }
+      .demo-credentials {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 9px;
+        background: #eef5ff;
+        border: 1px solid #bfd4f6;
+        color: #173d72;
+        font-size: 13px;
+      }
+      .demo-credentials code {
+        font-family: Consolas, monospace;
+        font-weight: 700;
+      }
+      @media (max-width:980px) {
+        .metric-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+        .workspace-grid { grid-template-columns: 1fr; }
+      }
+      @media (max-width:680px) {
+        .metric-grid { grid-template-columns: 1fr; }
+      }
+
+    
+      .manager-overlay{
+        position:fixed; inset:0; z-index:100;
+        display:none; align-items:center; justify-content:center;
+        padding:24px; background:rgba(5,13,27,.68);
+      }
+      .manager-overlay.show{display:flex;}
+      .manager-modal{
+        width:min(1000px,100%); max-height:90vh; overflow:auto;
+        background:#fff; border-radius:14px; border:1px solid var(--line);
+        box-shadow:var(--shadow);
+      }
+      .manager-head{
+        position:sticky; top:0; z-index:2;
+        display:flex; justify-content:space-between; align-items:center; gap:16px;
+        padding:18px 22px; background:#fff; border-bottom:1px solid var(--line);
+      }
+      .manager-head h3{margin:0;}
+      .manager-close{
+        width:38px;height:38px;border:1px solid var(--line);border-radius:8px;
+        background:#fff;font-size:22px;font-weight:900;
+      }
+      .manager-body{padding:22px;}
+      .manager-toolbar{
+        display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;
+      }
+      .manager-toolbar input,.manager-toolbar select{
+        min-height:42px;border:1px solid #b9c8d9;border-radius:8px;padding:9px 11px;background:#fff;
+      }
+      .mini-form{
+        display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+        padding:16px;border:1px solid var(--line);border-radius:10px;background:#fbfdff;margin-bottom:18px;
+      }
+      .mini-form .field{gap:5px;}
+      .mini-form .full{grid-column:1/-1;}
+      .small-btn{
+        border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 10px;
+        color:var(--blue);font-weight:900;cursor:pointer;
+      }
+      .small-btn.danger{color:#9f261e;border-color:#e8b8b3;}
+      .small-btn.primary-mini{color:#fff;background:var(--blue);border-color:var(--blue);}
+      .manager-table{width:100%;border-collapse:collapse;min-width:760px;}
+      .manager-table th,.manager-table td{
+        text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:middle;
+      }
+      .manager-table th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+      .manager-table select,.manager-table input{
+        min-height:36px;border:1px solid #c8d5e4;border-radius:7px;padding:6px 8px;background:#fff;
+      }
+      .modal-message{
+        margin:0 0 14px;padding:10px 12px;border-radius:8px;background:#eef5ff;color:#173d72;
+        display:none;font-weight:700;font-size:13px;
+      }
+      .modal-message.show{display:block;}
+      @media(max-width:680px){.manager-overlay{padding:10px;align-items:flex-start}.mini-form{grid-template-columns:1fr}}
+
+
+      .manager-nav-left{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        min-width:0;
+      }
+      .manager-back{
+        width:38px;
+        min-width:38px;
+        height:38px;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        border:1px solid #d7e2ef;
+        border-radius:10px;
+        background:#ffffff;
+        color:#173d72;
+        cursor:pointer;
+        padding:0;
+        flex:0 0 auto;
+        box-shadow:0 3px 10px rgba(16,24,39,.05);
+        transition:.15s ease;
+      }
+      .manager-back.show{display:inline-flex;}
+      .manager-back:hover{
+        border-color:var(--blue);
+        background:#f4f8ff;
+        color:var(--blue);
+        transform:translateX(-1px);
+      }
+      .manager-back svg{
+        width:21px;
+        height:21px;
+        display:block;
+      }
+        .manager-back{padding:0 10px;min-width:40px;}
+      }
+
+
+      .manager-savebar{
+        position:sticky;
+        bottom:0;
+        z-index:3;
+        display:none;
+        align-items:center;
+        justify-content:space-between;
+        gap:14px;
+        margin:22px -22px -22px;
+        padding:14px 22px;
+        border-top:1px solid var(--line);
+        background:rgba(255,255,255,.97);
+        backdrop-filter:blur(10px);
+      }
+      .manager-savebar.show{display:flex;}
+      .manager-save-status{
+        display:none;
+        align-items:center;
+        gap:8px;
+        color:#0b5f37;
+        font-weight:800;
+        font-size:13px;
+      }
+      .manager-save-status.show{display:flex;}
+      .manager-save-status::before{
+        content:"✓";
+        width:22px;
+        height:22px;
+        display:grid;
+        place-items:center;
+        border-radius:50%;
+        color:#fff;
+        background:#16834b;
+        font-size:13px;
+      }
+      .manager-save-btn{
+        min-height:42px;
+        border:0;
+        border-radius:8px;
+        padding:0 18px;
+        background:var(--blue);
+        color:#fff;
+        font-weight:900;
+        cursor:pointer;
+      }
+      .manager-save-btn:hover{background:var(--blue-dark);}
+      @media(max-width:680px){
+        .manager-savebar{
+          align-items:stretch;
+          flex-direction:column;
+        }
+        .manager-save-btn{width:100%;}
+      }
+
+
+      /* Polished action buttons */
+      .form-actions{
+        gap:10px;
+      }
+      .form-actions > button{
+        min-height:44px;
+        border-radius:10px;
+        padding:0 18px;
+        font-size:14px;
+        font-weight:800;
+        box-shadow:none;
+      }
+      .form-actions .primary{
+        background:var(--blue);
+        color:#fff;
+        border:1px solid var(--blue);
+      }
+      .form-actions .secondary{
+        background:#fff;
+        color:#173d72;
+        border:1px solid #cfdbea;
+      }
+      .form-actions .secondary:hover{
+        background:#f7faff;
+        border-color:#9fb7d8;
+      }
+      .form-actions .cancel-btn{
+        background:#fff;
+        color:#a1261d;
+        border:1px solid #efc2bd;
+      }
+      .form-actions .cancel-btn:hover{
+        background:#fff7f6;
+        border-color:#d98d86;
+      }
+
+      .manager-savebar{
+        margin:24px -22px -22px;
+        padding:14px 22px;
+        background:#fff;
+        border-top:1px solid var(--line);
+        box-shadow:0 -8px 18px rgba(16,24,39,.035);
+      }
+      .manager-save-btn{
+        min-width:150px;
+        min-height:44px;
+        border-radius:10px;
+        padding:0 20px;
+        box-shadow:none;
+      }
+      .manager-save-status{
+        min-height:32px;
+      }
+
+      /* Keep application detail actions on one clean row where possible */
+      .manager-body .form-actions{
+        display:flex;
+        align-items:center;
+        flex-wrap:wrap;
+        margin-top:22px !important;
+      }
+
+      @media(max-width:680px){
+        .manager-body .form-actions{
+          display:grid;
+          grid-template-columns:1fr;
+        }
+        .manager-body .form-actions > button{
+          width:100%;
+        }
+        .manager-savebar{
+          margin:20px -22px -22px;
+          padding:14px 18px;
+        }
+      }
+
+
+      /* Dedicated application screen */
+      .application-page{
+        display:none;
+        position:fixed;
+        inset:0;
+        z-index:80;
+        overflow-y:auto;
+        background:var(--soft);
+      }
+      .application-page.active{display:block;}
+      .application-page-topbar{
+        position:sticky;
+        top:0;
+        z-index:5;
+        color:#fff;
+        background:#07142c;
+        border-bottom:1px solid rgba(255,255,255,.12);
+      }
+      .application-page-nav{
+        min-height:68px;
+        display:grid;
+        grid-template-columns:1fr auto 1fr;
+        align-items:center;
+        gap:14px;
+      }
+      .application-page-back{
+        justify-self:start;
+        min-height:40px;
+        display:inline-flex;
+        align-items:center;
+        gap:7px;
+        border:1px solid rgba(255,255,255,.2);
+        border-radius:9px;
+        padding:0 13px;
+        color:#fff;
+        background:rgba(255,255,255,.06);
+        font-weight:800;
+        cursor:pointer;
+      }
+      .application-page-back:hover{background:rgba(255,255,255,.12);}
+      .application-page-back svg{width:20px;height:20px;}
+      .application-page-brand{
+        font-size:20px;
+        white-space:nowrap;
+      }
+      .application-page-mode{
+        justify-self:end;
+        display:inline-flex;
+        min-height:30px;
+        align-items:center;
+        border-radius:999px;
+        padding:0 11px;
+        background:rgba(255,255,255,.1);
+        font-size:12px;
+        font-weight:900;
+      }
+      .application-page-body{
+        padding-bottom:70px;
+      }
+      .application-page-body .section{
+        padding-top:42px;
+      }
+      .application-page-body .application-mode{
+        margin-bottom:24px;
+      }
+      @media(max-width:680px){
+        .application-page-nav{
+          grid-template-columns:auto 1fr;
+        }
+        .application-page-brand{justify-self:center;}
+        .application-page-mode{display:none;}
+        .application-page-back span{display:none;}
+        .application-page-back{
+          width:40px;
+          padding:0;
+          justify-content:center;
+        }
+      }
+
+
+      /* Auth recovery + password visibility */
+      .auth-links{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        flex-wrap:wrap;
+        grid-column:1/-1;
+        margin-top:-4px;
+      }
+      .auth-link{
+        border:0;
+        background:transparent;
+        color:var(--blue);
+        font-weight:800;
+        padding:0;
+        cursor:pointer;
+        font-size:13px;
+      }
+      .auth-link:hover{text-decoration:underline;}
+      .password-box{
+        position:relative;
+      }
+      .password-box input{
+        padding-right:48px;
+      }
+      .eye-toggle{
+        position:absolute;
+        top:50%;
+        right:10px;
+        transform:translateY(-50%);
+        width:32px;
+        height:32px;
+        display:grid;
+        place-items:center;
+        border:0;
+        border-radius:7px;
+        background:transparent;
+        color:#526173;
+        cursor:pointer;
+      }
+      .eye-toggle:hover{
+        background:#f1f5f9;
+        color:var(--blue);
+      }
+      .eye-toggle svg{
+        width:19px;
+        height:19px;
+      }
+      .recovery-shell{
+        display:none;
+        margin-top:18px;
+        border-top:1px solid var(--line);
+        padding-top:18px;
+      }
+      .recovery-shell.active{display:block;}
+      .otp-row{
+        display:grid;
+        grid-template-columns:repeat(6,44px);
+        gap:8px;
+        justify-content:start;
+      }
+      .otp-input{
+        width:44px !important;
+        height:48px;
+        min-height:48px !important;
+        text-align:center;
+        font-size:20px;
+        font-weight:900;
+        padding:0 !important;
+      }
+      .demo-code{
+        display:none;
+        margin-top:12px;
+        border:1px dashed #9fb7d8;
+        border-radius:8px;
+        padding:10px 12px;
+        background:#f7faff;
+        color:#173d72;
+        font-size:13px;
+      }
+      .demo-code.show{display:block;}
+      .recovered-email{
+        margin-top:12px;
+        padding:12px 14px;
+        border-radius:8px;
+        background:#edf9f2;
+        border:1px solid #9bd4b8;
+        color:#0b5f37;
+        font-weight:800;
+      }
+      @media(max-width:680px){
+        .otp-row{
+          grid-template-columns:repeat(6,40px);
+          gap:6px;
+        }
+        .otp-input{
+          width:40px !important;
+        }
+      }
+
+</style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="#top" aria-label="4incorp.com home">
+          <span class="four">4</span><span class="inc">IN</span>CORP<small>.com</small>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#how-it-works">How It Works</a>
+          <a href="#login">Portal Login</a>
+          <a href="#start-business">Start a Business</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="secondary" href="#login">Log In</a>
+          <button class="primary" type="button" onclick="openApplicationPage('account')">Start Filing</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <span class="eyebrow">Business formation support across all 50 states</span>
+            <h1>Register Your Business. Build Your Future.</h1>
+            <p>
+              4incorp.com helps entrepreneurs form LLCs, corporations, nonprofits,
+              DBAs, partnerships, and other business entities throughout the United States.
+            </p>
+            <div class="hero-actions">
+              <button class="primary" type="button" onclick="openApplicationPage('account')">Start Your Application</button>
+              <a class="secondary" href="#login">Access Your Account</a>
+            </div>
+          </div>
+
+          <div class="trust-row" aria-label="Service highlights">
+            <div class="trust-item">
+              <strong>All 50 States</strong>
+              <span>Choose the state where you want to form your business.</span>
+            </div>
+            <div class="trust-item">
+              <strong>Multiple Entity Types</strong>
+              <span>LLC, C corporation, S corporation, nonprofit, DBA, and more.</span>
+            </div>
+            <div class="trust-item">
+              <strong>Guided Application</strong>
+              <span>Complete the required information in one clear form.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="how-it-works">
+        <div class="container">
+          <div class="section-head">
+            <h2>Form your business in four steps</h2>
+            <p>Provide your information, select your state and entity type, review the details, and submit the application.</p>
+          </div>
+          <div class="step-grid">
+            <article class="step-card">
+              <div class="step-number">1</div>
+              <h3>Create an account</h3>
+              <p>Enter your contact information and choose a secure password.</p>
+            </article>
+            <article class="step-card">
+              <div class="step-number">2</div>
+              <h3>Choose your filing</h3>
+              <p>Select one of all 50 states and the appropriate business structure.</p>
+            </article>
+            <article class="step-card">
+              <div class="step-number">3</div>
+              <h3>Provide business details</h3>
+              <p>Complete the required ownership, address, and registered-agent fields.</p>
+            </article>
+            <article class="step-card">
+              <div class="step-number">4</div>
+              <h3>Review and submit</h3>
+              <p>Confirm the information before sending the application for processing.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt" id="login">
+        <div class="container login-layout">
+          <div class="login-copy">
+            <span class="eyebrow">Secure portal access</span>
+            <h2>One portal. Multiple ways to work with 4incorp.com.</h2>
+            <p>Customers can manage filings, administrators and staff can process applications, and guests can start without creating a password.</p>
+            <div class="check-list">
+              <span>Track application status in real time</span>
+              <span>Upload and receive business documents</span>
+              <span>Receive email confirmations and updates</span>
+              <span>Continue saved applications when signed in</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="portal-tabs" role="tablist" aria-label="Login type">
+              <button class="portal-tab active" type="button" data-portal="user">User Login</button>
+              <button class="portal-tab" type="button" data-portal="register">Register</button>
+              <button class="portal-tab" type="button" data-portal="admin">Admin Login</button>
+              <button class="portal-tab" type="button" data-portal="staff">Staff Login</button>
+              <button class="portal-tab" type="button" data-portal="guest">Continue as Guest</button>
+            </div>
+
+            <form class="portal-pane active" id="userLoginForm" data-portal-pane="user" novalidate>
+              <span class="portal-badge">Customer Portal</span><h3>User Login</h3>
+              <p class="card-intro">Sign in with the email and password you used when registering.</p>
+              
+              <div class="form-grid">
+                <div class="field full"><label>Email address <span class="required">*</span></label><input name="email" type="email" autocomplete="email" required></div>
+                <div class="field full">
+                  <label>Password <span class="required">*</span></label>
+                  <div class="password-box">
+                    <input id="userLoginPassword" name="password" type="password" minlength="8" required>
+                    <button class="eye-toggle" type="button" data-eye-for="userLoginPassword" aria-label="Show password"></button>
+                  </div>
+                </div>
+                <label class="check-field full"><input type="checkbox"><span>Remember my email on this device</span></label>
+                <div class="auth-links">
+                  <button class="auth-link" type="button" id="forgotPasswordBtn">Forgot Password?</button>
+                  <button class="auth-link" type="button" id="forgotEmailBtn">Forgot Email?</button>
+                </div>
+                <div class="form-message" role="status"></div>
+                <div class="form-actions"><button class="primary" type="submit">Sign In</button><button class="secondary" type="button" onclick="activatePortalTab('register')">Create Account</button></div>
+              </div>
+            </form>
+
+
+            <form class="portal-pane" id="registerForm" data-portal-pane="register" novalidate>
+              <span class="portal-badge">Create Account</span>
+              <h3>User Registration</h3>
+              <p class="card-intro">Create your account first, then sign in to access your dashboard and saved applications.</p>
+              <div class="form-grid">
+                <div class="field">
+                  <label>First name <span class="required">*</span></label>
+                  <input name="firstName" required>
+                </div>
+                <div class="field">
+                  <label>Last name <span class="required">*</span></label>
+                  <input name="lastName" required>
+                </div>
+                <div class="field full">
+                  <label>Email address <span class="required">*</span></label>
+                  <input name="email" type="email" autocomplete="email" required>
+                </div>
+                <div class="field full">
+                  <label>Phone number <span class="required">*</span></label>
+                  <input name="phone" type="tel" required>
+                </div>
+                <div class="field">
+                  <label>Password <span class="required">*</span></label>
+                  <div class="password-box">
+                    <input id="registerPassword" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                    <button class="eye-toggle" type="button" data-eye-for="registerPassword" aria-label="Show password"></button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Confirm password <span class="required">*</span></label>
+                  <div class="password-box">
+                    <input id="registerConfirmPassword" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required>
+                    <button class="eye-toggle" type="button" data-eye-for="registerConfirmPassword" aria-label="Show password"></button>
+                  </div>
+                </div>
+                <div class="form-message" role="status"></div>
+                <div class="form-actions">
+                  <button class="primary" type="submit">Create Account</button>
+                  <button class="secondary" type="button" id="goToUserLogin">Already have an account?</button>
+                </div>
+              </div>
+            </form>
+            <form class="portal-pane" id="adminLoginForm" data-portal-pane="admin" novalidate>
+              <span class="portal-badge">Restricted Access</span><h3>Administrator Login</h3>
+              <p class="card-intro">Manage users, applications, documents, staff assignments, payments, and status updates.</p>
+              <div class="demo-credentials"><strong>Frontend demo credentials</strong><br>Email: <code>admin@4incorp.com</code><br>Password: <code>Admin@123</code></div>
+              <div class="form-grid">
+                <div class="field full"><label>Admin email <span class="required">*</span></label><input name="email" type="email" required></div>
+                <div class="field full"><label>Password <span class="required">*</span></label><input name="password" type="password" minlength="8" required></div>
+                <div class="form-message" role="status"></div>
+                <div class="form-actions"><button class="primary" type="submit">Admin Sign In</button></div>
+              </div>
+            </form>
+
+            <form class="portal-pane" id="staffLoginForm" data-portal-pane="staff" novalidate>
+              <span class="portal-badge">Staff Workspace</span><h3>Staff Login</h3>
+              <p class="card-intro">Review assigned applications, request documents, add notes, and update filing progress.</p>
+              <div class="demo-credentials"><strong>Frontend demo credentials</strong><br>Email: <code>staff@4incorp.com</code><br>Password: <code>Staff@123</code></div>
+              <div class="form-grid">
+                <div class="field full"><label>Staff email <span class="required">*</span></label><input name="email" type="email" required></div>
+                <div class="field full"><label>Password <span class="required">*</span></label><input name="password" type="password" minlength="8" required></div>
+                <div class="form-message" role="status"></div>
+                <div class="form-actions"><button class="primary" type="submit">Staff Sign In</button></div>
+              </div>
+            </form>
+
+            <div class="portal-pane" data-portal-pane="guest">
+              <span class="portal-badge">One-Time Guest</span><h3>Continue Without an Account</h3>
+              <p class="card-intro">Use 4incorp.com as a one-time guest. No login, password, account creation, or saved credentials are required.</p>
+              <div class="guest-note"><strong>How it works:</strong> Open the application, enter only the information needed for your filing, submit it, save your reference number, and exit. Your contact details are application information — not login credentials.</div>
+              <div class="form-actions" style="margin-top:18px"><button class="primary" id="continueGuest" type="button">Start One-Time Application</button></div>
+            </div>
+          
+            <div class="recovery-shell" id="forgotPasswordPanel">
+              <span class="portal-badge">Password Recovery</span>
+              <h3>Forgot Password</h3>
+              <p class="card-intro">Enter your registered email. A 6-digit verification code will be sent to that email.</p>
+
+              <div id="forgotPasswordStep1">
+                <div class="form-grid">
+                  <div class="field full">
+                    <label>Registered email <span class="required">*</span></label>
+                    <input id="forgotPasswordEmail" type="email" placeholder="name@example.com">
+                  </div>
+                  <div class="form-actions">
+                    <button class="primary" type="button" id="sendPasswordCode">Send 6-Digit Code</button>
+                    <button class="secondary" type="button" data-close-recovery>Cancel</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="forgotPasswordStep2" style="display:none">
+                <div class="field full">
+                  <label>Enter verification code</label>
+                  <div class="otp-row" id="passwordOtpRow">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                  </div>
+                  <div class="demo-code" id="passwordDemoCode"></div>
+                </div>
+                <div class="form-actions" style="margin-top:14px">
+                  <button class="primary" type="button" id="verifyPasswordCode">Verify Code</button>
+                  <button class="secondary" type="button" id="resendPasswordCode">Resend Code</button>
+                </div>
+              </div>
+
+              <div id="forgotPasswordStep3" style="display:none">
+                <div class="form-grid">
+                  <div class="field">
+                    <label>New password</label>
+                    <div class="password-box">
+                      <input id="newResetPassword" type="password" minlength="8">
+                      <button class="eye-toggle" type="button" data-eye-for="newResetPassword" aria-label="Show password"></button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Confirm new password</label>
+                    <div class="password-box">
+                      <input id="confirmResetPassword" type="password" minlength="8">
+                      <button class="eye-toggle" type="button" data-eye-for="confirmResetPassword" aria-label="Show password"></button>
+                    </div>
+                  </div>
+                  <div class="form-message" id="resetPasswordMessage"></div>
+                  <div class="form-actions">
+                    <button class="primary" type="button" id="saveNewPassword">Update Password</button>
+                    <button class="secondary" type="button" data-close-recovery>Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="recovery-shell" id="forgotEmailPanel">
+              <span class="portal-badge">Email Recovery</span>
+              <h3>Forgot Email</h3>
+              <p class="card-intro">Enter the phone number used during registration. A 6-digit verification code will be used to confirm the account before showing the registered email.</p>
+
+              <div id="forgotEmailStep1">
+                <div class="form-grid">
+                  <div class="field full">
+                    <label>Registered phone number <span class="required">*</span></label>
+                    <input id="forgotEmailPhone" type="tel" placeholder="Phone number">
+                  </div>
+                  <div class="form-actions">
+                    <button class="primary" type="button" id="sendEmailRecoveryCode">Send 6-Digit Code</button>
+                    <button class="secondary" type="button" data-close-recovery>Cancel</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="forgotEmailStep2" style="display:none">
+                <div class="field full">
+                  <label>Enter verification code</label>
+                  <div class="otp-row" id="emailOtpRow">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                    <input class="otp-input" inputmode="numeric" maxlength="1">
+                  </div>
+                  <div class="demo-code" id="emailDemoCode"></div>
+                </div>
+                <div class="form-actions" style="margin-top:14px">
+                  <button class="primary" type="button" id="verifyEmailRecoveryCode">Verify Code</button>
+                  <button class="secondary" type="button" id="resendEmailRecoveryCode">Resend Code</button>
+                </div>
+              </div>
+
+              <div id="forgotEmailStep3" style="display:none">
+                <div class="recovered-email" id="recoveredEmail"></div>
+                <div class="form-actions" style="margin-top:14px">
+                  <button class="primary" type="button" id="backToLoginFromEmail">Back to Login</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="start-business">
+        <div class="container">
+          <div class="card" style="text-align:center;padding:clamp(34px,6vw,64px)">
+            <span class="portal-badge">Start Your Business</span>
+            <h2 style="font-size:clamp(32px,5vw,48px);margin:8px 0 12px">Ready to start your application?</h2>
+            <p style="max-width:680px;margin:0 auto 24px;color:var(--muted)">
+              Open the dedicated application screen and complete your filing in a clear step-by-step form.
+            </p>
+            <div class="form-actions" style="justify-content:center">
+              <button class="primary" type="button" onclick="openApplicationPage('account')">Create / Use Account</button>
+              <button class="secondary" type="button" onclick="openApplicationPage('guest')">Continue as Guest</button>
+            </div>
+          </div>
+        </div>
+      </section>
+</main>
+
+
+    
+    <section class="application-page" id="applicationPage" aria-label="Business formation application">
+      <div class="application-page-topbar">
+        <div class="container application-page-nav">
+          <button class="application-page-back" type="button" onclick="closeApplicationPage()" aria-label="Go back">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Back</span>
+          </button>
+          <strong class="application-page-brand">4incorp.com</strong>
+          <span class="application-page-mode" id="applicationPageMode">Application</span>
+        </div>
+      </div>
+      <div class="application-page-body">
+<div class="container">
+          <div class="section-head">
+            <h2>Business formation application</h2>
+            <p>Complete the required information below. Review your details before submitting.</p>
+          </div>
+
+          <div class="application-shell">
+            <form class="card application-card" id="applicationForm" novalidate>
+              <div class="application-mode" aria-label="Application account mode">
+                <button class="mode-btn active" type="button" data-mode="account">Create / Use Account</button>
+                <button class="mode-btn" type="button" data-mode="guest">One-Time Guest</button>
+              </div>
+              <div class="guest-note guest-only-hint"><strong>One-time guest application:</strong> no password or account is required. Complete the filing information, submit the application, save your reference number, and you are done.</div>
+
+              <div class="form-grid">
+                <fieldset class="fieldset">
+                  <legend>1. Customer information</legend>
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="firstName">First name <span class="required">*</span></label>
+                      <input id="firstName" name="firstName" autocomplete="given-name" required />
+                    </div>
+                    <div class="field">
+                      <label for="lastName">Last name <span class="required">*</span></label>
+                      <input id="lastName" name="lastName" autocomplete="family-name" required />
+                    </div>
+                    <div class="field">
+                      <label for="customerEmail">Contact email <span class="required">*</span></label>
+                      <input id="customerEmail" name="customerEmail" type="email" autocomplete="email" required /><span class="hint">Used for this application only when continuing as a guest; it is not a login credential.</span>
+                    </div>
+                    <div class="field">
+                      <label for="phone">Contact phone number <span class="required">*</span></label>
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        autocomplete="tel"
+                        inputmode="tel"
+                        placeholder="(555) 555-5555"
+                        pattern="[0-9()+.\s-]{10,}"
+                        required
+                      />
+                    </div>
+                    <div class="field" id="accountPasswordField">
+                      <label for="accountPassword">Create account password <span class="required">*</span></label>
+                      <div class="password-wrap">
+                        <input
+                          id="accountPassword"
+                          name="accountPassword"
+                          type="password"
+                          autocomplete="new-password"
+                          minlength="8"
+                          required
+                        />
+                        <button class="show-password" type="button" data-password-target="accountPassword">Show</button>
+                      </div>
+                      <span class="hint">Use at least 8 characters.</span>
+                    </div>
+                    <div class="field" id="confirmPasswordField">
+                      <label for="confirmPassword">Confirm password <span class="required">*</span></label>
+                      <div class="password-wrap">
+                        <input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          autocomplete="new-password"
+                          minlength="8"
+                          required
+                        />
+                        <button class="show-password" type="button" data-password-target="confirmPassword">Show</button>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="fieldset">
+                  <legend>2. Business filing details</legend>
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="businessType">Business type <span class="required">*</span></label>
+                      <select id="businessType" name="businessType" required>
+                        <option value="">Select a business type</option>
+                        <option>Limited Liability Company (LLC)</option>
+                        <option>Professional LLC (PLLC)</option>
+                        <option>Series LLC</option>
+                        <option>Corporation (Corp. / Inc.)</option>
+                        <option>C Corporation (C Corp)</option>
+                        <option>S Corporation (S Corp)</option>
+                        <option>Professional Corporation (PC)</option>
+                        <option>Benefit Corporation (B Corp)</option>
+                        <option>Nonprofit Corporation</option>
+                        <option>Doing Business As (DBA)</option>
+                        <option>General Partnership</option>
+                        <option>Limited Partnership (LP)</option>
+                        <option>Limited Liability Partnership (LLP)</option>
+                        <option>Sole Proprietorship</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="formationState">Formation state <span class="required">*</span></label>
+                      <select id="formationState" name="formationState" required>
+                        <option value="">Select a state</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                      </select>
+                    </div>
+                    <div class="field full">
+                      <label for="preferredName">Preferred business name <span class="required">*</span></label>
+                      <input
+                        id="preferredName"
+                        name="preferredName"
+                        placeholder="Example: Bright Future Consulting LLC"
+                        maxlength="120"
+                        required
+                      />
+                    </div>
+                    <div class="field full">
+                      <label for="alternateName">Alternate business name</label>
+                      <input
+                        id="alternateName"
+                        name="alternateName"
+                        placeholder="A second choice if your preferred name is unavailable"
+                        maxlength="120"
+                      />
+                    </div>
+                    <div class="field">
+                      <label for="owners">Number of owners <span class="required">*</span></label>
+                      <input id="owners" name="owners" type="number" min="1" max="1000" value="1" required />
+                    </div>
+                    <div class="field">
+                      <label for="management">Management structure <span class="required">*</span></label>
+                      <select id="management" name="management" required>
+                        <option value="">Select a structure</option>
+                        <option>Owner or member managed</option>
+                        <option>Manager managed</option>
+                        <option>Board and officers</option>
+                        <option>General partners</option>
+                        <option>Not sure — I need guidance</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="startDate">Expected start date <span class="required">*</span></label>
+                      <input id="startDate" name="startDate" type="date" required />
+                    </div>
+                    <div class="field">
+                      <label for="einHelp">Do you need EIN assistance? <span class="required">*</span></label>
+                      <select id="einHelp" name="einHelp" required>
+                        <option value="">Select one</option>
+                        <option>Yes</option>
+                        <option>No</option>
+                        <option>Not sure</option>
+                      </select>
+                    </div>
+                    <div class="field full">
+                      <label for="businessPurpose">Business purpose or activity <span class="required">*</span></label>
+                      <textarea
+                        id="businessPurpose"
+                        name="businessPurpose"
+                        maxlength="800"
+                        placeholder="Briefly describe the products or services the business will provide."
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="fieldset">
+                  <legend>3. Principal business address</legend>
+                  <div class="form-grid">
+                    <div class="field full">
+                      <label for="streetAddress">Street address <span class="required">*</span></label>
+                      <input id="streetAddress" name="streetAddress" autocomplete="street-address" required />
+                    </div>
+                    <div class="field">
+                      <label for="city">City <span class="required">*</span></label>
+                      <input id="city" name="city" autocomplete="address-level2" required />
+                    </div>
+                    <div class="field">
+                      <label for="addressState">State <span class="required">*</span></label>
+                      <select id="addressState" name="addressState" autocomplete="address-level1" required>
+                        <option value="">Select a state</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="zip">ZIP code <span class="required">*</span></label>
+                      <input
+                        id="zip"
+                        name="zip"
+                        autocomplete="postal-code"
+                        inputmode="numeric"
+                        pattern="\d{5}(-\d{4})?"
+                        placeholder="12345"
+                        required
+                      />
+                    </div>
+                    <div class="field">
+                      <label for="agentChoice">Registered agent <span class="required">*</span></label>
+                      <select id="agentChoice" name="agentChoice" required>
+                        <option value="">Select one</option>
+                        <option>I already have a registered agent</option>
+                        <option>I need registered-agent service</option>
+                        <option>I need help deciding</option>
+                      </select>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="fieldset">
+                  <legend>4. Review and authorization</legend>
+                  <div class="form-grid">
+                    <div class="field full">
+                      <label for="additionalNotes">Additional notes</label>
+                      <textarea
+                        id="additionalNotes"
+                        name="additionalNotes"
+                        maxlength="1000"
+                        placeholder="Tell us about any special filing needs or questions."
+                      ></textarea>
+                    </div>
+                    <label class="check-field full">
+                      <input id="accuracyConsent" name="accuracyConsent" type="checkbox" required />
+                      <span>
+                        I confirm that the information entered is accurate to the best of my knowledge.
+                        <span class="required">*</span>
+                      </span>
+                    </label>
+                    <label class="check-field full">
+                      <input id="contactConsent" name="contactConsent" type="checkbox" required />
+                      <span>
+                        I authorize 4incorp.com to contact me about this application.
+                        <span class="required">*</span>
+                      </span>
+                    </label>
+                    <div class="form-message" id="applicationMessage" role="status" aria-live="polite"></div>
+                    <div class="form-actions">
+                      <button class="primary" type="submit">Review and Submit Application</button>
+                      <button class="secondary" id="clearApplication" type="button">Clear Form</button>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+
+            </form>
+
+            <aside class="review-card" aria-label="Application summary">
+              <h3>Application Summary</h3>
+              <p>Your selections will appear here as you complete the form.</p>
+              <div class="review-list">
+                <div>
+                  <span>Customer</span>
+                  <strong id="reviewCustomer">Not entered</strong>
+                </div>
+                <div>
+                  <span>Business name</span>
+                  <strong id="reviewName">Not entered</strong>
+                </div>
+                <div>
+                  <span>Business type</span>
+                  <strong id="reviewType">Not selected</strong>
+                </div>
+                <div>
+                  <span>Formation state</span>
+                  <strong id="reviewState">Not selected</strong>
+                </div>
+                <div>
+                  <span>Registered agent</span>
+                  <strong id="reviewAgent">Not selected</strong>
+                </div>
+              </div>
+              <button class="primary" id="reviewButton" type="button">Check Required Fields</button>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- FRONTEND DEMO WORKSPACES -->
+    <section class="workspace" id="userWorkspace" aria-label="User dashboard">
+      <div class="workspace-topbar">
+        <div class="container">
+          <div class="workspace-user">
+            <strong>4incorp.com</strong>
+            <span class="role-pill">USER PORTAL</span>
+            <span id="loggedInUserEmail">User</span>
+          </div>
+          <button class="workspace-logout" type="button" onclick="closeManager();closeWorkspaces()">Log Out</button>
+        </div>
+      </div>
+      <div class="container workspace-body">
+        <div class="workspace-heading">
+          <div><h2>User Dashboard</h2><p>Manage your applications, status, documents, and messages.</p></div>
+          <button class="primary" type="button" onclick="openApplicationPage('account','user')">Start New Application</button>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Applications</span><strong>2</strong></div>
+          <div class="metric-card"><span>In Process</span><strong>1</strong></div>
+          <div class="metric-card"><span>Completed</span><strong>1</strong></div>
+          <div class="metric-card"><span>Unread Messages</span><strong>2</strong></div>
+        </div>
+        <div class="workspace-grid">
+          <div class="panel">
+            <h3>My Applications</h3>
+            <div class="table-wrap">
+              <table class="demo-table">
+                <thead><tr><th>Reference</th><th>Business</th><th>State</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>4INC-24081301</td><td>Bright Future Consulting LLC</td><td>Delaware</td><td><span class="tiny-status">In Process</span></td><td><button class="action-link" type="button" onclick="beginUserRoute('application','4INC-24081301')">View</button></td></tr>
+                  <tr><td>4INC-24060118</td><td>North Star Media LLC</td><td>Wyoming</td><td><span class="tiny-status green">Completed</span></td><td><button class="action-link" type="button" onclick="beginUserRoute('documents','4INC-24060118')">Documents</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <aside class="panel">
+            <h3>Quick Access</h3>
+            <div class="quick-list">
+              <button class="quick-item action-link" type="button" onclick="beginUserRoute('documents','')"><strong>Documents</strong><span>View uploaded and completed filing documents.</span></button>
+              <button class="quick-item action-link" type="button" onclick="beginUserRoute('messages','')"><strong>Messages</strong><span>2 unread messages from the formation team.</span></button>
+              <button class="quick-item action-link" type="button" onclick="beginUserRoute('profile','')"><strong>Profile</strong><span>Update your contact information.</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="workspace-note">Frontend demo only. These dashboard values are sample data until a backend is connected.</div>
+      </div>
+    </section>
+
+    <section class="workspace" id="adminWorkspace" aria-label="Admin dashboard">
+      <div class="workspace-topbar">
+        <div class="container">
+          <div class="workspace-user">
+            <strong>4incorp.com</strong>
+            <span class="role-pill">ADMIN</span>
+            <span>admin@4incorp.com</span>
+          </div>
+          <button class="workspace-logout" type="button" onclick="closeManager();closeWorkspaces()">Log Out</button>
+        </div>
+      </div>
+      <div class="container workspace-body">
+        <div class="workspace-heading">
+          <div><h2>Admin Dashboard</h2><p>Manage applications, users, staff, documents, payments, and filing status.</p></div>
+          <button class="secondary" type="button" onclick="openManager('applications')">Filter Applications</button>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Total Applications</span><strong>128</strong></div>
+          <div class="metric-card"><span>Under Review</span><strong>19</strong></div>
+          <div class="metric-card"><span>In Process</span><strong>34</strong></div>
+          <div class="metric-card"><span>Completed</span><strong>75</strong></div>
+        </div>
+        <div class="workspace-grid">
+          <div class="panel">
+            <h3>Recent Applications</h3>
+            <div class="table-wrap">
+              <table class="demo-table">
+                <thead><tr><th>Reference</th><th>Customer</th><th>Business</th><th>Assigned Staff</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>4INC-24081301</td><td>Alex Morgan</td><td>Bright Future Consulting LLC</td><td>Sarah M.</td><td><span class="tiny-status">In Process</span></td><td><button class="action-link" type="button" onclick="openManager('application','4INC-24081301')">Manage</button></td></tr>
+                  <tr><td>4INC-24081302</td><td>Jamie Lee</td><td>JL Ventures Inc.</td><td>Unassigned</td><td><span class="tiny-status orange">Under Review</span></td><td><button class="action-link" type="button" onclick="openManager('application','4INC-24081302')">Manage</button></td></tr>
+                  <tr><td>4INC-24081303</td><td>Chris Allen</td><td>Allen Creative LLC</td><td>Mike T.</td><td><span class="tiny-status green">Completed</span></td><td><button class="action-link" type="button" onclick="openManager('application','4INC-24081303')">Manage</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <aside class="panel">
+            <h3>Administration</h3>
+            <div class="quick-list">
+              <button class="quick-item action-link" type="button" onclick="openManager('users')"><strong>Manage Users</strong><span>Customers and account access.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openManager('staff')"><strong>Manage Staff</strong><span>Staff accounts and assignments.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openManager('payments')"><strong>Payments</strong><span>Payment and refund status.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openManager('documents')"><strong>Documents</strong><span>Customer and formation documents.</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="workspace-note">Frontend demo only. Admin actions currently show UI feedback and do not persist data.</div>
+      </div>
+    </section>
+
+    <section class="workspace" id="staffWorkspace" aria-label="Staff dashboard">
+      <div class="workspace-topbar">
+        <div class="container">
+          <div class="workspace-user">
+            <strong>4incorp.com</strong>
+            <span class="role-pill">STAFF</span>
+            <span>staff@4incorp.com</span>
+          </div>
+          <button class="workspace-logout" type="button" onclick="closeManager();closeWorkspaces()">Log Out</button>
+        </div>
+      </div>
+      <div class="container workspace-body">
+        <div class="workspace-heading">
+          <div><h2>Staff Dashboard</h2><p>Review assigned applications, request documents, add notes, and update filing progress.</p></div>
+          <button class="secondary" type="button" onclick="openStaffManager('assigned','')">My Assigned Work</button>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Assigned</span><strong>18</strong></div>
+          <div class="metric-card"><span>Needs Review</span><strong>6</strong></div>
+          <div class="metric-card"><span>Waiting on Customer</span><strong>4</strong></div>
+          <div class="metric-card"><span>Completed Today</span><strong>3</strong></div>
+        </div>
+        <div class="workspace-grid">
+          <div class="panel">
+            <h3>Assigned Applications</h3>
+            <div class="table-wrap">
+              <table class="demo-table">
+                <thead><tr><th>Reference</th><th>Business</th><th>Customer</th><th>Status</th><th>Next Action</th></tr></thead>
+                <tbody>
+                  <tr><td>4INC-24081301</td><td>Bright Future Consulting LLC</td><td>Alex Morgan</td><td><span class="tiny-status">In Process</span></td><td><button class="action-link" type="button" onclick="openStaffManager('application','4INC-24081301')">Open</button></td></tr>
+                  <tr><td>4INC-24081277</td><td>Green Path Services LLC</td><td>Taylor Reed</td><td><span class="tiny-status orange">Documents Needed</span></td><td><button class="action-link" type="button" onclick="openStaffManager('request-docs','')">Request Docs</button></td></tr>
+                  <tr><td>4INC-24081219</td><td>Summit Labs Inc.</td><td>Jordan Hill</td><td><span class="tiny-status">Under Review</span></td><td><button class="action-link" type="button" onclick="openStaffManager('note','')">Add Note</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <aside class="panel">
+            <h3>Staff Tools</h3>
+            <div class="quick-list">
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('status','')"><strong>Update Status</strong><span>Move an application through the filing workflow.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('request-docs','')"><strong>Request Documents</strong><span>Ask a customer for missing files.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('note','')"><strong>Internal Notes</strong><span>Add staff-only notes to an application.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('message','')"><strong>Message Customer</strong><span>Send an application-related message.</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="workspace-note">Frontend demo only. Staff actions are visual placeholders until APIs are connected.</div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container footer-row">
+        <strong>4incorp.com</strong>
+        <span>Register Your Business. Build Your Future.</span>
+      </div>
+    </footer>
+
+    
+    <div class="manager-overlay" id="managerOverlay" aria-hidden="true">
+      <div class="manager-modal" role="dialog" aria-modal="true" aria-labelledby="managerTitle">
+        <div class="manager-head">
+          <div class="manager-nav-left">
+            <button class="manager-back" id="managerBack" type="button" aria-label="Go to previous screen" title="Previous">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <h3 id="managerTitle">Manage</h3>
+          </div>
+          <button class="manager-close" id="managerClose" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="manager-body">
+          <div class="modal-message" id="managerMessage"></div>
+          <div id="managerContent"></div>
+          <div class="manager-savebar" id="managerSavebar">
+            <div class="manager-save-status" id="managerSaveStatus">Your changes have been saved successfully.</div>
+            <button class="manager-save-btn" id="managerSaveBtn" type="button">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const applicationForm = document.getElementById("applicationForm");
+      const applicationMessage = document.getElementById("applicationMessage");
+
+      function showMessage(element, message, type) {
+        element.textContent = message;
+        element.className = "form-message " + type;
+      }
+      function clearMessage(element) { element.textContent = ""; element.className = "form-message"; }
+      function showToast(message) {
+        const toast = document.getElementById("toast"); toast.textContent = message; toast.classList.add("show");
+        clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove("show"), 3200);
+      }
+      function selectedText(id, fallback) {
+        const select = document.getElementById(id); return select.value ? select.options[select.selectedIndex].text : fallback;
+      }
+      function updateReview() {
+        const fullName = [document.getElementById("firstName").value, document.getElementById("lastName").value].map(v=>v.trim()).filter(Boolean).join(" ");
+        document.getElementById("reviewCustomer").textContent = fullName || "Not entered";
+        document.getElementById("reviewName").textContent = document.getElementById("preferredName").value.trim() || "Not entered";
+        document.getElementById("reviewType").textContent = selectedText("businessType", "Not selected");
+        document.getElementById("reviewState").textContent = selectedText("formationState", "Not selected");
+        document.getElementById("reviewAgent").textContent = selectedText("agentChoice", "Not selected");
+      }
+      function validatePasswords() {
+        const p=document.getElementById("accountPassword"), c=document.getElementById("confirmPassword");
+        if (document.body.classList.contains("guest-mode")) { c.setCustomValidity(""); return; }
+        c.setCustomValidity(c.value && p.value !== c.value ? "The passwords do not match." : "");
+      }
+      function focusFirstInvalid(form) { const el=form.querySelector(":invalid"); if(el) el.focus(); }
+
+      document.querySelectorAll(".portal-tab").forEach(btn=>btn.addEventListener("click",()=>{
+        document.querySelectorAll(".portal-tab").forEach(x=>x.classList.toggle("active",x===btn));
+        document.querySelectorAll("[data-portal-pane]").forEach(p=>p.classList.toggle("active",p.dataset.portalPane===btn.dataset.portal));
+      }));
+      const demoCredentials = {
+        user: { workspace: "userWorkspace" },
+        admin: { email: "admin@4incorp.com", password: "Admin@123", workspace: "adminWorkspace" },
+        staff: { email: "staff@4incorp.com", password: "Staff@123", workspace: "staffWorkspace" }
+      };
+
+      function openWorkspace(workspaceId) {
+        document.querySelector("main").style.display = "none";
+        document.querySelector(".site-header").style.display = "none";
+        document.querySelector("footer").style.display = "none";
+        document.querySelectorAll(".workspace").forEach(w => w.classList.remove("active"));
+        document.getElementById(workspaceId).classList.add("active");
+        window.scrollTo({top:0, behavior:"smooth"});
+      }
+
+      function closeWorkspaces() {
+        document.querySelectorAll(".workspace").forEach(w => w.classList.remove("active"));
+        document.querySelector("main").style.display = "";
+        document.querySelector(".site-header").style.display = "";
+        document.querySelector("footer").style.display = "";
+        document.getElementById("login").scrollIntoView({behavior:"smooth"});
+      }
+
+      [
+        ["userLoginForm","user"],
+        ["adminLoginForm","admin"],
+        ["staffLoginForm","staff"]
+      ].forEach(([formId, role]) => {
+        const form = document.getElementById(formId);
+        form.addEventListener("submit", e => {
+          e.preventDefault();
+          const msg = form.querySelector(".form-message");
+          clearMessage(msg);
+
+          if (!form.checkValidity()) {
+            form.reportValidity();
+            showMessage(msg, "Please complete the required login fields.", "error");
+            return;
+          }
+
+          const email = form.elements.email.value.trim().toLowerCase();
+          const password = form.elements.password.value;
+          const expected = demoCredentials[role];
+
+          if (role === "user") {
+            const users = JSON.parse(localStorage.getItem("4incorpUsers") || "[]");
+            const account = users.find(u => u.email.toLowerCase() === email);
+
+            if (!account) {
+              showMessage(msg, "Account not found. Please register first.", "error");
+              return;
+            }
+
+            if (account.password !== password) {
+              showMessage(msg, "Incorrect password.", "error");
+              return;
+            }
+
+            const userEmailLabel = document.getElementById("loggedInUserEmail");
+            if (userEmailLabel) userEmailLabel.textContent = account.email;
+
+            if (typeof userDemo !== "undefined") {
+              userDemo.profile.name = [account.firstName, account.lastName].filter(Boolean).join(" ");
+              userDemo.profile.email = account.email;
+              userDemo.profile.phone = account.phone || "";
+            }
+
+            showMessage(msg, "Login successful. Opening user dashboard…", "success");
+            setTimeout(() => openWorkspace(expected.workspace), 350);
+            return;
+          }
+
+          if (email !== expected.email.toLowerCase() || password !== expected.password) {
+            showMessage(msg, "Invalid email or password.", "error");
+            return;
+          }
+
+          showMessage(msg, "Login successful. Opening " + role + " dashboard…", "success");
+          setTimeout(() => openWorkspace(expected.workspace), 350);
+        });
+      });
+document.getElementById("continueGuest").addEventListener("click",()=>{
+        document.body.classList.add("guest-mode");
+        document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="guest"));
+        ["accountPassword","confirmPassword"].forEach(id=>{const el=document.getElementById(id);el.required=false;el.value="";});
+        openApplicationPage("guest");
+        showToast("One-time guest mode enabled — no login, password, or account required.");
+      });
+      document.querySelectorAll(".mode-btn").forEach(btn=>btn.addEventListener("click",()=>{
+        setApplicationMode(btn.dataset.mode);
+      }));
+      document.querySelectorAll(".show-password").forEach(button=>button.addEventListener("click",()=>{
+        const input=document.getElementById(button.dataset.passwordTarget), showing=input.type==="text"; input.type=showing?"password":"text"; button.textContent=showing?"Show":"Hide";
+      }));
+      ["accountPassword","confirmPassword"].forEach(id=>document.getElementById(id).addEventListener("input",validatePasswords));
+      applicationForm.addEventListener("input",()=>{clearMessage(applicationMessage);validatePasswords();updateReview();});
+      applicationForm.addEventListener("change",updateReview);
+      document.getElementById("reviewButton").addEventListener("click",()=>{
+        validatePasswords();updateReview(); if(!applicationForm.checkValidity()){applicationForm.reportValidity();focusFirstInvalid(applicationForm);showToast("Please complete the highlighted required fields.");return;} showToast("All required fields are complete. Your application is ready to submit.");
+      });
+      applicationForm.addEventListener("submit",event=>{
+        event.preventDefault(); clearMessage(applicationMessage); validatePasswords();
+        if(!applicationForm.checkValidity()){applicationForm.reportValidity();focusFirstInvalid(applicationForm);showMessage(applicationMessage,"Please complete every required field before submitting.","error");return;}
+        const reference="4INC-"+Date.now().toString().slice(-8);
+        const isGuest=document.body.classList.contains("guest-mode");
+        if(isGuest){
+          showMessage(applicationMessage,"Application submitted successfully. Reference: "+reference+". No guest account was created and no login credentials were saved. Please save this reference number before leaving the page.","success");
+          showToast("Guest application submitted — save your reference number.");
+        }else{
+          showMessage(applicationMessage,"Application received successfully. Reference: "+reference+". Your account application is ready for backend integration.","success");
+          showToast("Application received successfully.");
+        }
+        applicationMessage.scrollIntoView({behavior:"smooth",block:"center"});
+      });
+      document.getElementById("clearApplication").addEventListener("click",()=>{
+        if(!window.confirm("Clear all information entered in this application?"))return; applicationForm.reset();clearMessage(applicationMessage);document.getElementById("owners").value="1";updateReview();showToast("The application form has been cleared.");
+      });
+      const downloadDemoBtn = document.getElementById("downloadDemo");
+      if (downloadDemoBtn) {
+        downloadDemoBtn.addEventListener("click",()=>showToast("Document center demo — connect this action to secure S3 presigned URLs."));
+      }
+
+      const cancelDemoBtn = document.getElementById("cancelDemo");
+      if (cancelDemoBtn) {
+        cancelDemoBtn.addEventListener("click",()=>showToast("Cancellation should be submitted as a request and reviewed by staff before the status changes."));
+      }
+
+      // ----- Working frontend admin demo -----
+      const adminDemo = {
+        users: [
+          {id:1,name:"Alex Morgan",email:"alex@example.com",role:"Customer",status:"Active"},
+          {id:2,name:"Jamie Lee",email:"jamie@example.com",role:"Customer",status:"Active"},
+          {id:3,name:"Chris Allen",email:"chris@example.com",role:"Customer",status:"Suspended"}
+        ],
+        staff: [
+          {id:1,name:"Sarah M.",email:"sarah@4incorp.com",status:"Active",assigned:8},
+          {id:2,name:"Mike T.",email:"mike@4incorp.com",status:"Active",assigned:6}
+        ],
+        applications: [
+          {ref:"4INC-24081301",customer:"Alex Morgan",business:"Bright Future Consulting LLC",staff:"Sarah M.",status:"In Process"},
+          {ref:"4INC-24081302",customer:"Jamie Lee",business:"JL Ventures Inc.",staff:"Unassigned",status:"Under Review"},
+          {ref:"4INC-24081303",customer:"Chris Allen",business:"Allen Creative LLC",staff:"Mike T.",status:"Completed"}
+        ],
+        payments: [
+          {ref:"4INC-24081301",customer:"Alex Morgan",amount:249,status:"Paid"},
+          {ref:"4INC-24081302",customer:"Jamie Lee",amount:399,status:"Pending"},
+          {ref:"4INC-24081303",customer:"Chris Allen",amount:199,status:"Refunded"}
+        ],
+        documents: [
+          {id:1,ref:"4INC-24081301",name:"Formation Questionnaire.pdf",type:"Customer Upload",status:"Received"},
+          {id:2,ref:"4INC-24081303",name:"Certificate of Formation.pdf",type:"Completed Document",status:"Ready"},
+          {id:3,ref:"4INC-24081302",name:"Identity Document",type:"Requested",status:"Waiting"}
+        ]
+      };
+
+      const managerOverlay=document.getElementById("managerOverlay");
+      const managerTitle=document.getElementById("managerTitle");
+      const managerContent=document.getElementById("managerContent");
+      const managerMessage=document.getElementById("managerMessage");
+
+      function managerNotice(msg){
+        managerMessage.textContent=msg; managerMessage.classList.add("show");
+        clearTimeout(managerNotice.timer);
+        managerNotice.timer=setTimeout(()=>managerMessage.classList.remove("show"),2400);
+      }
+      function closeManager(){
+        managerOverlay.classList.remove("show");
+        managerOverlay.setAttribute("aria-hidden","true");
+        managerHistory.length = 0;
+        currentManagerRoute = null;
+        setManagerBackVisibility();
+        updateManagerSavebar();
+      }
+      document.getElementById("managerClose").addEventListener("click",closeManager);
+      document.getElementById("managerBack").addEventListener("click", managerBackOneStep);
+      managerOverlay.addEventListener("click",e=>{if(e.target===managerOverlay)closeManager();});
+
+      function esc(v){
+        return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+      }
+
+
+      // ----- Modal navigation history: Back returns to the previous modal screen -----
+      const managerHistory = [];
+      let currentManagerRoute = null;
+
+      function setManagerBackVisibility() {
+        const back = document.getElementById("managerBack");
+        if (!back) return;
+        back.classList.toggle("show", managerHistory.length > 0);
+      }
+
+
+      // ----- Universal save/update confirmation for editable manager screens -----
+      const managerSavebar = document.getElementById("managerSavebar");
+      const managerSaveBtn = document.getElementById("managerSaveBtn");
+      const managerSaveStatus = document.getElementById("managerSaveStatus");
+
+      function routeIsEditable(route){
+        if(!route) return false;
+
+        if(route.scope === "admin"){
+          return ["users","staff","payments","documents","application"].includes(route.type);
+        }
+
+        if(route.scope === "staff"){
+          return ["application","status","request-docs","note","message"].includes(route.type);
+        }
+
+        if(route.scope === "user"){
+          return ["profile","messages","cancellation"].includes(route.type);
+        }
+
+        return false;
+      }
+
+      function updateManagerSavebar(){
+        if(!managerSavebar) return;
+        const editable = routeIsEditable(currentManagerRoute);
+        managerSavebar.classList.toggle("show", editable);
+        managerSaveStatus.classList.remove("show");
+
+        if(!editable) return;
+
+        if(currentManagerRoute.scope === "staff" && currentManagerRoute.type === "message"){
+          managerSaveBtn.textContent = "Send Message";
+        } else if(currentManagerRoute.scope === "staff" && currentManagerRoute.type === "request-docs"){
+          managerSaveBtn.textContent = "Send Request";
+        } else if(currentManagerRoute.scope === "user" && currentManagerRoute.type === "messages"){
+          managerSaveBtn.textContent = "Send Message";
+        } else if(currentManagerRoute.scope === "user" && currentManagerRoute.type === "cancellation"){
+          managerSaveBtn.textContent = "Submit Request";
+        } else {
+          managerSaveBtn.textContent = "Save Changes";
+        }
+      }
+
+      function showManagerSaved(message="Your changes have been saved successfully."){
+        if(!managerSaveStatus) return;
+        managerSaveStatus.textContent = message;
+        managerSaveStatus.classList.add("show");
+        clearTimeout(showManagerSaved.timer);
+        showManagerSaved.timer = setTimeout(()=>{
+          managerSaveStatus.classList.remove("show");
+        }, 3200);
+      }
+
+      function saveCurrentManagerChanges(){
+        const route = currentManagerRoute;
+        if(!route) return;
+
+        // ADMIN
+        if(route.scope === "admin"){
+          if(route.type === "application"){
+            const a = adminDemo.applications.find(x=>x.ref===route.ref);
+            if(a){
+              const staffEl = document.getElementById("appStaff");
+              const statusEl = document.getElementById("appStatus");
+              if(staffEl) a.staff = staffEl.value;
+              if(statusEl) a.status = statusEl.value;
+              syncAdminDashboard();
+            }
+          }
+          showManagerSaved();
+          return;
+        }
+
+        // STAFF
+        if(route.scope === "staff"){
+          if(route.type === "application"){
+            const a = findStaffApp(route.ref);
+            const statusEl = document.getElementById("staffAppStatus");
+            if(a && statusEl){
+              a.status = statusEl.value;
+              syncStaffDashboard();
+            }
+            showManagerSaved();
+            return;
+          }
+
+          if(route.type === "status"){
+            const refEl = document.getElementById("staffStatusRef");
+            const statusEl = document.getElementById("staffStatusValue");
+            if(refEl && statusEl){
+              const a = findStaffApp(refEl.value);
+              if(a){
+                a.status = statusEl.value;
+                syncStaffDashboard();
+              }
+            }
+            showManagerSaved("Status updated successfully.");
+            return;
+          }
+
+          if(route.type === "request-docs"){
+            const refEl = document.getElementById("docReqRef");
+            const nameEl = document.getElementById("docReqName");
+            if(!refEl || !nameEl || !nameEl.value.trim()){
+              managerNotice("Please enter the document name.");
+              return;
+            }
+            const a = findStaffApp(refEl.value);
+            if(a){
+              a.requestedDocs.push(nameEl.value.trim());
+              a.status = "Documents Needed";
+              syncStaffDashboard();
+            }
+            showManagerSaved("Document request sent successfully.");
+            return;
+          }
+
+          if(route.type === "note"){
+            const refEl = document.getElementById("noteRef");
+            const noteEl = document.getElementById("noteText");
+            if(!refEl || !noteEl || !noteEl.value.trim()){
+              managerNotice("Please enter a note.");
+              return;
+            }
+            const a = findStaffApp(refEl.value);
+            if(a) a.notes.push(noteEl.value.trim());
+            showManagerSaved("Internal note saved successfully.");
+            return;
+          }
+
+          if(route.type === "message"){
+            const refEl = document.getElementById("msgRef");
+            const msgEl = document.getElementById("staffMsgText");
+            if(!refEl || !msgEl || !msgEl.value.trim()){
+              managerNotice("Please type a message.");
+              return;
+            }
+            const a = findStaffApp(refEl.value);
+            if(a) a.messages.push(msgEl.value.trim());
+            showManagerSaved("Message sent successfully.");
+            return;
+          }
+        }
+
+        // USER
+        if(route.scope === "user"){
+          if(route.type === "profile"){
+            const form = document.getElementById("directUserProfileForm");
+            if(form){
+              const f = new FormData(form);
+              userDemo.profile = {
+                name:f.get("name"),
+                email:f.get("email"),
+                phone:f.get("phone")
+              };
+              const label = document.getElementById("loggedInUserEmail");
+              if(label) label.textContent = userDemo.profile.email;
+            }
+            showManagerSaved("Profile updated successfully.");
+            return;
+          }
+
+          if(route.type === "messages"){
+            const el = document.getElementById("directUserMessage");
+            const value = el ? el.value.trim() : "";
+            if(!value){
+              managerNotice("Please type a message.");
+              return;
+            }
+            userDemo.messages.unshift({
+              from:"You",
+              subject:"Message sent",
+              body:value,
+              time:"Just now"
+            });
+            showManagerSaved("Message sent successfully.");
+            return;
+          }
+
+          if(route.type === "cancellation"){
+            const el = document.getElementById("directCancelReason");
+            const reason = el ? el.value.trim() : "";
+            if(!reason){
+              managerNotice("Please enter a cancellation reason.");
+              return;
+            }
+            showManagerSaved("Cancellation request submitted successfully.");
+            return;
+          }
+        }
+      }
+
+      if(managerSaveBtn){
+        managerSaveBtn.addEventListener("click", saveCurrentManagerChanges);
+      }
+
+      function renderManagerRoute(route) {
+        if (!route) return;
+        currentManagerRoute = route;
+
+        if (route.scope === "admin") {
+          if (route.type === "users") renderUsers();
+          else if (route.type === "staff") renderStaff();
+          else if (route.type === "payments") renderPayments(route.ref || "");
+          else if (route.type === "documents") renderDocuments(route.ref || "");
+          else if (route.type === "applications") renderApplications();
+          else if (route.type === "application") renderApplication(route.ref);
+        }
+
+        if (route.scope === "staff") {
+          if (route.type === "application") renderStaffApplication(route.ref);
+          else if (route.type === "status") renderStaffStatus(route.ref || "");
+          else if (route.type === "request-docs") renderStaffRequestDocs(route.ref || "");
+          else if (route.type === "note") renderStaffNote(route.ref || "");
+          else if (route.type === "message") renderStaffMessage(route.ref || "");
+          else if (route.type === "assigned") renderAssignedStaff();
+        }
+
+        if (route.scope === "user") {
+          if (route.type === "application") openUserApplicationDirect(route.ref);
+          else if (route.type === "documents") openUserDocumentsDirect(route.ref || "");
+          else if (route.type === "messages") openUserMessagesDirect(route.ref || "");
+          else if (route.type === "profile") openUserProfileDirect();
+          else if (route.type === "cancellation") openUserCancellationDirect(route.ref);
+        }
+
+        setManagerBackVisibility();
+        updateManagerSavebar();
+      }
+
+      function goManagerRoute(route, pushCurrent=true) {
+        if (pushCurrent && currentManagerRoute) {
+          managerHistory.push({...currentManagerRoute});
+        }
+        renderManagerRoute(route);
+      }
+
+      function resetManagerHistory(route=null) {
+        managerHistory.length = 0;
+        currentManagerRoute = route;
+        setManagerBackVisibility();
+      }
+
+      function managerBackOneStep() {
+        if (!managerHistory.length) return;
+        const previous = managerHistory.pop();
+        renderManagerRoute(previous);
+      }
+
+      function openManager(type, ref){
+        managerMessage.classList.remove("show");
+        managerOverlay.classList.add("show");
+        managerOverlay.setAttribute("aria-hidden","false");
+        resetManagerHistory();
+        goManagerRoute({scope:"admin", type, ref:ref || ""}, false);
+      }
+
+      function renderUsers(){
+        managerTitle.textContent="Manage Users";
+        managerContent.innerHTML=`
+          <form class="mini-form" id="addUserForm">
+            <div class="field"><label>Name</label><input name="name" required></div>
+            <div class="field"><label>Email</label><input name="email" type="email" required></div>
+            <div class="field"><label>Status</label><select name="status"><option>Active</option><option>Suspended</option></select></div>
+            <div class="full"><button class="primary" type="submit">Add User</button></div>
+          </form>
+          <div class="table-wrap"><table class="manager-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          ${adminDemo.users.map(u=>`<tr>
+            <td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.role)}</td>
+            <td><select data-user-status="${u.id}"><option ${u.status==="Active"?"selected":""}>Active</option><option ${u.status==="Suspended"?"selected":""}>Suspended</option></select></td>
+            <td><button class="small-btn danger" data-delete-user="${u.id}">Delete</button></td>
+          </tr>`).join("")}
+          </tbody></table></div>`;
+        document.getElementById("addUserForm").onsubmit=e=>{
+          e.preventDefault(); const f=new FormData(e.target);
+          adminDemo.users.push({id:Date.now(),name:f.get("name"),email:f.get("email"),role:"Customer",status:f.get("status")});
+          renderUsers(); managerNotice("User added.");
+        };
+        managerContent.querySelectorAll("[data-user-status]").forEach(el=>el.onchange=()=>{
+          const u=adminDemo.users.find(x=>x.id==el.dataset.userStatus); if(u)u.status=el.value; 
+        });
+        managerContent.querySelectorAll("[data-delete-user]").forEach(btn=>btn.onclick=()=>{
+          adminDemo.users=adminDemo.users.filter(x=>x.id!=btn.dataset.deleteUser); renderUsers(); managerNotice("User deleted.");
+        });
+      }
+
+      function renderStaff(){
+        managerTitle.textContent="Manage Staff";
+        managerContent.innerHTML=`
+          <form class="mini-form" id="addStaffForm">
+            <div class="field"><label>Name</label><input name="name" required></div>
+            <div class="field"><label>Email</label><input name="email" type="email" required></div>
+            <div class="field"><label>Status</label><select name="status"><option>Active</option><option>Inactive</option></select></div>
+            <div class="full"><button class="primary" type="submit">Add Staff Member</button></div>
+          </form>
+          <div class="table-wrap"><table class="manager-table"><thead><tr><th>Name</th><th>Email</th><th>Assigned</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          ${adminDemo.staff.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.email)}</td><td>${s.assigned}</td>
+            <td><select data-staff-status="${s.id}"><option ${s.status==="Active"?"selected":""}>Active</option><option ${s.status==="Inactive"?"selected":""}>Inactive</option></select></td>
+            <td><button class="small-btn danger" data-delete-staff="${s.id}">Delete</button></td></tr>`).join("")}
+          </tbody></table></div>`;
+        document.getElementById("addStaffForm").onsubmit=e=>{
+          e.preventDefault(); const f=new FormData(e.target);
+          adminDemo.staff.push({id:Date.now(),name:f.get("name"),email:f.get("email"),status:f.get("status"),assigned:0});
+          renderStaff(); managerNotice("Staff member added.");
+        };
+        managerContent.querySelectorAll("[data-staff-status]").forEach(el=>el.onchange=()=>{
+          const s=adminDemo.staff.find(x=>x.id==el.dataset.staffStatus); if(s)s.status=el.value; 
+        });
+        managerContent.querySelectorAll("[data-delete-staff]").forEach(btn=>btn.onclick=()=>{
+          adminDemo.staff=adminDemo.staff.filter(x=>x.id!=btn.dataset.deleteStaff); renderStaff(); managerNotice("Staff member deleted.");
+        });
+      }
+
+      function renderApplications(){
+        managerTitle.textContent="Manage Applications";
+        managerContent.innerHTML=`<div class="manager-toolbar">
+          <select id="appFilter"><option value="">All statuses</option><option>Under Review</option><option>In Process</option><option>Completed</option><option>Cancelled</option></select>
+        </div><div class="table-wrap"><table class="manager-table"><thead><tr><th>Reference</th><th>Customer</th><th>Business</th><th>Staff</th><th>Status</th><th>Action</th></tr></thead><tbody id="appRows"></tbody></table></div>`;
+        const rows=document.getElementById("appRows");
+        function draw(){
+          const filter=document.getElementById("appFilter").value;
+          rows.innerHTML=adminDemo.applications.filter(a=>!filter||a.status===filter).map(a=>`<tr>
+            <td>${esc(a.ref)}</td><td>${esc(a.customer)}</td><td>${esc(a.business)}</td><td>${esc(a.staff)}</td>
+            <td>${esc(a.status)}</td><td><button class="small-btn" type="button" onclick="goManagerRoute({scope:'admin',type:'application',ref:'${esc(a.ref)}'})">Manage</button></td></tr>`).join("");
+          rows.querySelectorAll("[data-open-app]").forEach(b=>b.onclick=()=>renderApplication(b.dataset.openApp));
+        }
+        document.getElementById("appFilter").onchange=draw; draw();
+      }
+
+      function renderApplication(ref){
+        const a=adminDemo.applications.find(x=>x.ref===ref);
+        if(!a)return;
+        managerTitle.textContent="Application "+a.ref;
+        const staffOptions=["Unassigned",...adminDemo.staff.filter(s=>s.status==="Active").map(s=>s.name)];
+        managerContent.innerHTML=`
+          <div class="mini-form">
+            <div class="field"><label>Customer</label><input value="${esc(a.customer)}" disabled></div>
+            <div class="field"><label>Business</label><input value="${esc(a.business)}" disabled></div>
+            <div class="field"><label>Reference</label><input value="${esc(a.ref)}" disabled></div>
+            <div class="field"><label>Assigned staff</label><select id="appStaff">${staffOptions.map(s=>`<option ${s===a.staff?"selected":""}>${esc(s)}</option>`).join("")}</select></div>
+            <div class="field"><label>Status</label><select id="appStatus">${["Received","Under Review","In Process","Completed","Delivered","Cancelled"].map(s=>`<option ${s===a.status?"selected":""}>${s}</option>`).join("")}</select></div>
+            <div class="field"><label>Internal note</label><input id="appNote" placeholder="Add a staff/admin note"></div>
+
+          </div>
+          <div class="quick-list">
+            <button class="quick-item action-link" id="openAppDocuments" type="button"><strong>Documents</strong><span>Review files for this application.</span></button>
+            <button class="quick-item action-link" id="openAppPayment" type="button"><strong>Payment</strong><span>Update payment/refund status for this application.</span></button>
+          </div>`;
+
+        const docBtn=document.getElementById("openAppDocuments");
+        const payBtn=document.getElementById("openAppPayment");
+        if(docBtn) docBtn.onclick=()=>goManagerRoute({scope:"admin",type:"documents",ref:a.ref});
+        if(payBtn) payBtn.onclick=()=>goManagerRoute({scope:"admin",type:"payments",ref:a.ref});
+      }
+
+      function renderPayments(filterRef=""){
+        managerTitle.textContent=filterRef ? "Payment · "+filterRef : "Manage Payments";
+        const paymentRows=adminDemo.payments.map((p,i)=>({...p,_i:i})).filter(p=>!filterRef||p.ref===filterRef);
+        managerContent.innerHTML=`<div class="table-wrap"><table class="manager-table"><thead><tr><th>Reference</th><th>Customer</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>
+        ${paymentRows.map(p=>`<tr><td>${esc(p.ref)}</td><td>${esc(p.customer)}</td><td>$${Number(p.amount).toFixed(2)}</td>
+          <td><select data-pay-status="${p._i}">${["Pending","Paid","Refunded","Failed"].map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select></td>
+          <td><button class="small-btn" data-refund="${p._i}">Mark Refunded</button></td></tr>`).join("")}
+        </tbody></table></div>`;
+        managerContent.querySelectorAll("[data-pay-status]").forEach(el=>el.onchange=()=>{adminDemo.payments[el.dataset.payStatus].status=el.value;});
+        managerContent.querySelectorAll("[data-refund]").forEach(btn=>btn.onclick=()=>{adminDemo.payments[btn.dataset.refund].status="Refunded";renderPayments();managerNotice("Payment marked refunded.");});
+      }
+
+      function renderDocuments(filterRef=""){
+        managerTitle.textContent=filterRef ? "Documents · "+filterRef : "Manage Documents";
+        const visibleDocs=adminDemo.documents.filter(d=>!filterRef||d.ref===filterRef);
+        managerContent.innerHTML=`
+          <form class="mini-form" id="addDocumentForm">
+            <div class="field"><label>Application Ref.</label><input name="ref" placeholder="4INC-..." value="${esc(filterRef)}" required></div>
+            <div class="field"><label>Document name</label><input name="name" required></div>
+            <div class="field"><label>Type</label><select name="type"><option>Customer Upload</option><option>Requested</option><option>Completed Document</option></select></div>
+            <div class="full"><button class="primary" type="submit">Add Document Record</button></div>
+          </form>
+          <div class="table-wrap"><table class="manager-table"><thead><tr><th>Reference</th><th>Document</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          ${visibleDocs.map(d=>`<tr><td>${esc(d.ref)}</td><td>${esc(d.name)}</td><td>${esc(d.type)}</td>
+            <td><select data-doc-status="${d.id}">${["Waiting","Received","Ready","Rejected"].map(s=>`<option ${s===d.status?"selected":""}>${s}</option>`).join("")}</select></td>
+            <td><button class="small-btn danger" data-delete-doc="${d.id}">Delete</button></td></tr>`).join("")}
+          </tbody></table></div>`;
+        document.getElementById("addDocumentForm").onsubmit=e=>{
+          e.preventDefault();const f=new FormData(e.target);
+          adminDemo.documents.push({id:Date.now(),ref:f.get("ref"),name:f.get("name"),type:f.get("type"),status:"Waiting"});
+          renderDocuments();managerNotice("Document record added.");
+        };
+        managerContent.querySelectorAll("[data-doc-status]").forEach(el=>el.onchange=()=>{
+          const d=adminDemo.documents.find(x=>x.id==el.dataset.docStatus); if(d)d.status=el.value;
+        });
+        managerContent.querySelectorAll("[data-delete-doc]").forEach(btn=>btn.onclick=()=>{
+          adminDemo.documents=adminDemo.documents.filter(x=>x.id!=btn.dataset.deleteDoc);renderDocuments();managerNotice("Document removed.");
+        });
+      }
+
+      function syncAdminDashboard(){
+        const tbody=document.querySelector("#adminWorkspace .demo-table tbody");
+        if(tbody){
+          tbody.innerHTML=adminDemo.applications.map(a=>`<tr>
+            <td>${esc(a.ref)}</td><td>${esc(a.customer)}</td><td>${esc(a.business)}</td><td>${esc(a.staff)}</td>
+            <td><span class="tiny-status ${a.status==="Completed"?"green":a.status==="Under Review"?"orange":""}">${esc(a.status)}</span></td>
+            <td><button class="action-link" type="button" onclick="openManager('application','${esc(a.ref)}')">Manage</button></td>
+          </tr>`).join("");
+          tbody.querySelectorAll("[data-admin-action]").forEach(b=>b.onclick=()=>openManager("application",b.dataset.ref));
+        }
+      }
+
+
+      // ----- Working User + Staff frontend demo -----
+      const userDemo = {
+        profile: {name:"Demo User", email:"", phone:"(555) 555-0100"},
+        applications: [
+          {
+            ref:"4INC-24081301", business:"Bright Future Consulting LLC", state:"Delaware",
+            entity:"Limited Liability Company", status:"In Process", submitted:"August 13, 2026",
+            lastUpdated:"Today, 12:48 PM", team:"Business Formation Staff"
+          },
+          {
+            ref:"4INC-24060118", business:"North Star Media LLC", state:"Wyoming",
+            entity:"Limited Liability Company", status:"Completed", submitted:"June 1, 2026",
+            lastUpdated:"June 7, 2026", team:"Business Formation Staff"
+          }
+        ],
+        documents: [
+          {ref:"4INC-24081301", name:"Formation Questionnaire.pdf", type:"Uploaded", status:"Received"},
+          {ref:"4INC-24060118", name:"Certificate of Formation.pdf", type:"Completed Document", status:"Ready to Download"}
+        ],
+        messages: [
+          {from:"Formation Staff", subject:"Application review complete", body:"Your application passed the initial review and is now being prepared for filing.", time:"Today 12:48 PM"},
+          {from:"Formation Staff", subject:"Confirmation", body:"We received your application successfully.", time:"August 13, 2026"}
+        ]
+      };
+
+      const staffDemo = {
+        applications: [
+          {ref:"4INC-24081301", business:"Bright Future Consulting LLC", customer:"Alex Morgan", status:"In Process", notes:["Initial review complete."], requestedDocs:[], messages:[]},
+          {ref:"4INC-24081277", business:"Green Path Services LLC", customer:"Taylor Reed", status:"Documents Needed", notes:[], requestedDocs:["Government-issued ID"], messages:[]},
+          {ref:"4INC-24081219", business:"Summit Labs Inc.", customer:"Jordan Hill", status:"Under Review", notes:[], requestedDocs:[], messages:[]}
+        ]
+      };
+
+      function statusStepsHTML(status){
+        const steps=["Received","Under Review","In Process","Completed","Delivered"];
+        let current=steps.indexOf(status);
+        if(current<0) current=1;
+        return `<div class="status-track">${steps.map((s,i)=>{
+          const cls=i<current?"done":i===current?"current":"";
+          const dot=i<current?"✓":(i+1);
+          return `<div class="status-step ${cls}"><div class="status-dot">${dot}</div><div><strong>${s}</strong><span>${i===0?"Application submitted":i===1?"Application is being reviewed":i===2?"Filing is being prepared":i===3?"Formation completed":"Documents delivered"}</span></div></div>`;
+        }).join("")}</div>`;
+      }
+
+      function renderUserApplication(ref){
+        const a=userDemo.applications.find(x=>x.ref===ref) || userDemo.applications[0];
+        managerTitle.textContent="Application "+a.ref;
+        managerContent.innerHTML=`
+          <div class="status-header">
+            <div><span class="portal-badge">Application #${esc(a.ref)}</span><h3 style="font-size:28px;margin:4px 0">${esc(a.business)}</h3><span style="color:var(--muted)">${esc(a.state)} · ${esc(a.entity)}</span></div>
+            <span class="status-chip">${esc(a.status)}</span>
+          </div>
+          ${statusStepsHTML(a.status)}
+          <div class="status-details">
+            <div class="status-detail"><span>Submitted</span><strong>${esc(a.submitted)}</strong></div>
+            <div class="status-detail"><span>Last updated</span><strong>${esc(a.lastUpdated)}</strong></div>
+            <div class="status-detail"><span>Email notifications</span><strong>Enabled</strong></div>
+            <div class="status-detail"><span>Assigned team</span><strong>${esc(a.team)}</strong></div>
+          </div>
+          <div class="form-actions" style="margin-top:20px">
+            <button class="primary" id="userViewDocs" type="button">Documents</button>
+            <button class="secondary" id="userSendMessage" type="button">Message</button>
+            <button class="secondary cancel-btn" id="userCancelRequest" type="button">Request Cancellation</button>
+          </div>`;
+        document.getElementById("userViewDocs").onclick=()=>renderUserDocuments(a.ref);
+        document.getElementById("userSendMessage").onclick=()=>renderUserMessages(a.ref);
+        document.getElementById("userCancelRequest").onclick=()=>{
+          managerContent.innerHTML=`
+            <div class="mini-form">
+              <div class="field full"><label>Cancellation reason</label><textarea id="cancelReason" placeholder="Tell us why you want to request cancellation." style="min-height:110px"></textarea></div>
+              <div class="full"><button class="primary" id="submitCancelRequest" type="button">Submit Cancellation Request</button></div>
+            </div>`;
+          managerTitle.textContent="Request Cancellation · "+a.ref;
+          document.getElementById("submitCancelRequest").onclick=()=>{
+            const reason=document.getElementById("cancelReason").value.trim();
+            if(!reason){managerNotice("Please enter a cancellation reason.");return;}
+            managerNotice("Cancellation request submitted for frontend demo.");
+          };
+        };
+      }
+
+      function renderUserDocuments(filterRef=""){
+        managerTitle.textContent=filterRef ? "My Documents · "+filterRef : "My Documents";
+        const docs=userDemo.documents.filter(d=>!filterRef||d.ref===filterRef);
+        managerContent.innerHTML=`<div class="table-wrap"><table class="manager-table">
+          <thead><tr><th>Reference</th><th>Document</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>${docs.map(d=>`<tr><td>${esc(d.ref)}</td><td>${esc(d.name)}</td><td>${esc(d.type)}</td><td>${esc(d.status)}</td>
+          <td><button class="small-btn" data-user-doc="${esc(d.name)}">${d.status.includes("Ready")?"Download":"View"}</button></td></tr>`).join("") || `<tr><td colspan="5">No documents available yet.</td></tr>`}</tbody>
+        </table></div>`;
+        managerContent.querySelectorAll("[data-user-doc]").forEach(b=>b.onclick=()=>managerNotice(b.dataset.userDoc+" opened — frontend demo."));
+      }
+
+      function renderUserMessages(ref=""){
+        managerTitle.textContent=ref ? "Messages · "+ref : "Messages";
+        managerContent.innerHTML=`
+          <div class="quick-list">
+            ${userDemo.messages.map(m=>`<div class="quick-item"><strong>${esc(m.subject)}</strong><span>${esc(m.from)} · ${esc(m.time)}</span><p style="margin:8px 0 0;color:var(--muted)">${esc(m.body)}</p></div>`).join("")}
+          </div>
+          <div class="mini-form" style="margin-top:18px">
+            <div class="field full"><label>New message</label><textarea id="userMessageText" placeholder="Type your message..." style="min-height:100px"></textarea></div>
+            <div class="full"><button class="primary" id="sendUserMessage" type="button">Message</button></div>
+          </div>`;
+        document.getElementById("sendUserMessage").onclick=()=>{
+          const v=document.getElementById("userMessageText").value.trim();
+          if(!v){managerNotice("Please type a message.");return;}
+          userDemo.messages.unshift({from:"You",subject:"Message sent",body:v,time:"Just now"});
+          renderUserMessages(ref); managerNotice("Message sent in frontend demo.");
+        };
+      }
+
+      function renderUserProfile(){
+        managerTitle.textContent="My Profile";
+        const loginEmail=document.getElementById("loggedInUserEmail")?.textContent || "";
+        userDemo.profile.email=loginEmail;
+        managerContent.innerHTML=`
+          <form class="mini-form" id="userProfileForm">
+            <div class="field"><label>Full name</label><input name="name" value="${esc(userDemo.profile.name)}" required></div>
+            <div class="field"><label>Email</label><input name="email" type="email" value="${esc(userDemo.profile.email)}" required></div>
+            <div class="field"><label>Phone</label><input name="phone" value="${esc(userDemo.profile.phone)}"></div>
+
+          </form>`;
+        document.getElementById("userProfileForm").onsubmit=e=>{
+          e.preventDefault(); const f=new FormData(e.target);
+          userDemo.profile={name:f.get("name"),email:f.get("email"),phone:f.get("phone")};
+          document.getElementById("loggedInUserEmail").textContent=userDemo.profile.email;
+          managerNotice("Profile updated.");
+        };
+      }
+
+      function openUserManager(type,ref=""){
+        managerMessage.classList.remove("show");
+        managerOverlay.classList.add("show");
+        managerOverlay.setAttribute("aria-hidden","false");
+        resetManagerHistory();
+        goManagerRoute({scope:"user", type, ref}, false);
+      }
+
+      function findStaffApp(ref){
+        return ref ? staffDemo.applications.find(a=>a.ref===ref) : staffDemo.applications[0];
+      }
+
+      function renderStaffApplication(ref){
+        const a=findStaffApp(ref); if(!a)return;
+        managerTitle.textContent="Staff Application · "+a.ref;
+        managerContent.innerHTML=`
+          <div class="mini-form">
+            <div class="field"><label>Customer</label><input value="${esc(a.customer)}" disabled></div>
+            <div class="field"><label>Business</label><input value="${esc(a.business)}" disabled></div>
+            <div class="field"><label>Status</label><select id="staffAppStatus">${["Received","Under Review","Documents Needed","In Process","Completed","Delivered"].map(s=>`<option ${s===a.status?"selected":""}>${s}</option>`).join("")}</select></div>
+
+          </div>
+          <div class="form-actions">
+            <button class="secondary" id="staffReqDocs" type="button">Request Documents</button>
+            <button class="secondary" id="staffAddNote" type="button">Add Internal Note</button>
+            <button class="secondary" id="staffMsgCustomer" type="button">Message Customer</button>
+          </div>
+          <div class="quick-list" style="margin-top:18px">
+            <div class="quick-item"><strong>Internal notes</strong><span>${a.notes.length?a.notes.map(esc).join(" · "):"No notes yet."}</span></div>
+            <div class="quick-item"><strong>Requested documents</strong><span>${a.requestedDocs.length?a.requestedDocs.map(esc).join(" · "):"None requested."}</span></div>
+          </div>`;
+
+        document.getElementById("staffReqDocs").onclick=()=>goManagerRoute({scope:"staff",type:"request-docs",ref:a.ref});
+        document.getElementById("staffAddNote").onclick=()=>goManagerRoute({scope:"staff",type:"note",ref:a.ref});
+        document.getElementById("staffMsgCustomer").onclick=()=>goManagerRoute({scope:"staff",type:"message",ref:a.ref});
+      }
+
+      function renderStaffStatus(ref=""){
+        const a=findStaffApp(ref);
+        managerTitle.textContent="Update Application Status";
+        managerContent.innerHTML=`<div class="mini-form">
+          <div class="field"><label>Application</label><select id="staffStatusRef">${staffDemo.applications.map(x=>`<option value="${esc(x.ref)}" ${a&&x.ref===a.ref?"selected":""}>${esc(x.ref)} · ${esc(x.business)}</option>`).join("")}</select></div>
+          <div class="field"><label>New status</label><select id="staffStatusValue">${["Received","Under Review","Documents Needed","In Process","Completed","Delivered"].map(s=>`<option ${a&&s===a.status?"selected":""}>${s}</option>`).join("")}</select></div>
+
+        </div>`;
+
+      }
+
+      function renderStaffRequestDocs(ref=""){
+        const a=findStaffApp(ref);
+        managerTitle.textContent="Request Documents";
+        managerContent.innerHTML=`<div class="mini-form">
+          <div class="field"><label>Application</label><select id="docReqRef">${staffDemo.applications.map(x=>`<option value="${esc(x.ref)}" ${a&&x.ref===a.ref?"selected":""}>${esc(x.ref)} · ${esc(x.customer)}</option>`).join("")}</select></div>
+          <div class="field"><label>Document needed</label><input id="docReqName" placeholder="e.g. Government-issued ID"></div>
+          <div class="field full"><label>Message to customer</label><textarea id="docReqMessage" placeholder="Please upload..." style="min-height:90px"></textarea></div>
+
+        </div>`;
+
+      }
+
+      function renderStaffNote(ref=""){
+        const a=findStaffApp(ref);
+        managerTitle.textContent="Internal Notes";
+        managerContent.innerHTML=`<div class="mini-form">
+          <div class="field"><label>Application</label><select id="noteRef">${staffDemo.applications.map(x=>`<option value="${esc(x.ref)}" ${a&&x.ref===a.ref?"selected":""}>${esc(x.ref)} · ${esc(x.business)}</option>`).join("")}</select></div>
+          <div class="field full"><label>Internal note</label><textarea id="noteText" placeholder="Staff-only note..." style="min-height:100px"></textarea></div>
+
+        </div>`;
+
+      }
+
+      function renderStaffMessage(ref=""){
+        const a=findStaffApp(ref);
+        managerTitle.textContent="Message Customer";
+        managerContent.innerHTML=`<div class="mini-form">
+          <div class="field"><label>Application / Customer</label><select id="msgRef">${staffDemo.applications.map(x=>`<option value="${esc(x.ref)}" ${a&&x.ref===a.ref?"selected":""}>${esc(x.ref)} · ${esc(x.customer)}</option>`).join("")}</select></div>
+          <div class="field full"><label>Message</label><textarea id="staffMsgText" placeholder="Write a message to the customer..." style="min-height:110px"></textarea></div>
+
+        </div>`;
+
+      }
+
+      function renderAssignedStaff(){
+        managerTitle.textContent="My Assigned Applications";
+        managerContent.innerHTML=`<div class="table-wrap"><table class="manager-table"><thead><tr><th>Reference</th><th>Business</th><th>Customer</th><th>Status</th><th>Action</th></tr></thead><tbody>
+        ${staffDemo.applications.map(a=>`<tr><td>${esc(a.ref)}</td><td>${esc(a.business)}</td><td>${esc(a.customer)}</td><td>${esc(a.status)}</td><td><button class="small-btn" type="button" onclick="goManagerRoute({scope:'staff',type:'application',ref:'${esc(a.ref)}'})">Open</button></td></tr>`).join("")}
+        </tbody></table></div>`;
+        managerContent.querySelectorAll("[data-staff-open]").forEach(b=>b.onclick=()=>renderStaffApplication(b.dataset.staffOpen));
+      }
+
+      function openStaffManager(type,ref=""){
+        managerMessage.classList.remove("show");
+        managerOverlay.classList.add("show");
+        managerOverlay.setAttribute("aria-hidden","false");
+        resetManagerHistory();
+        goManagerRoute({scope:"staff", type, ref}, false);
+      }
+
+      function syncStaffDashboard(){
+        const tbody=document.querySelector("#staffWorkspace .demo-table tbody");
+        if(!tbody)return;
+        tbody.innerHTML=staffDemo.applications.map(a=>`<tr>
+          <td>${esc(a.ref)}</td><td>${esc(a.business)}</td><td>${esc(a.customer)}</td>
+          <td><span class="tiny-status ${a.status==="Documents Needed"?"orange":a.status==="Completed"?"green":""}">${esc(a.status)}</span></td>
+          <td><button class="action-link" type="button" onclick="openStaffManager('application','${esc(a.ref)}')">Open</button></td>
+        </tr>`).join("");
+        tbody.querySelectorAll("[data-staff-action]").forEach(b=>b.onclick=()=>openStaffManager(b.dataset.staffAction,b.dataset.ref||""));
+      }
+
+
+      // =========================================================
+      // Reliable delegated dashboard actions
+      // This catches BOTH original and dynamically-rendered buttons.
+      // =========================================================
+
+      
+
+
+      window.addEventListener("error", function(e){
+        const existing=document.getElementById("runtimeErrorBanner");
+        if(existing) return;
+        const div=document.createElement("div");
+        div.id="runtimeErrorBanner";
+        div.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#8f1f17;color:#fff;padding:12px 14px;border-radius:8px;font-weight:700";
+        div.textContent="Frontend JavaScript error: "+(e.message||"Unknown error");
+        document.body.appendChild(div);
+      });
+
+
+
+      function beginUserRoute(type, ref="") {
+        managerMessage.classList.remove("show");
+        managerOverlay.classList.add("show");
+        managerOverlay.setAttribute("aria-hidden","false");
+        resetManagerHistory();
+        goManagerRoute({scope:"user", type, ref}, false);
+      }
+
+      // ----- User dashboard direct actions -----
+      function showManagerShell(title, html) {
+        managerTitle.textContent = title;
+        managerContent.innerHTML = html;
+        managerMessage.classList.remove("show");
+        managerOverlay.classList.add("show");
+        managerOverlay.setAttribute("aria-hidden","false");
+      }
+
+      function openUserApplicationDirect(ref) {
+        const a = userDemo.applications.find(x => x.ref === ref) || userDemo.applications[0];
+        showManagerShell("Application " + a.ref, `
+          <div class="status-header">
+            <div>
+              <span class="portal-badge">Application #${esc(a.ref)}</span>
+              <h3 style="font-size:28px;margin:6px 0">${esc(a.business)}</h3>
+              <span style="color:var(--muted)">${esc(a.state)} · ${esc(a.entity)}</span>
+            </div>
+            <span class="status-chip">${esc(a.status)}</span>
+          </div>
+          ${statusStepsHTML(a.status)}
+          <div class="status-details">
+            <div class="status-detail"><span>Submitted</span><strong>${esc(a.submitted)}</strong></div>
+            <div class="status-detail"><span>Last updated</span><strong>${esc(a.lastUpdated)}</strong></div>
+            <div class="status-detail"><span>Email notifications</span><strong>Enabled</strong></div>
+            <div class="status-detail"><span>Assigned team</span><strong>${esc(a.team)}</strong></div>
+          </div>
+          <div class="form-actions" style="margin-top:20px">
+            <button class="primary" type="button" onclick="goManagerRoute({scope:'user',type:'documents',ref:'${esc(a.ref)}'})">Documents</button>
+            <button class="secondary" type="button" onclick="goManagerRoute({scope:'user',type:'messages',ref:'${esc(a.ref)}'})">Message</button>
+            <button class="secondary cancel-btn" type="button" onclick="goManagerRoute({scope:'user',type:'cancellation',ref:'${esc(a.ref)}'})">Request Cancellation</button>
+          </div>
+        `);
+      }
+
+      function openUserDocumentsDirect(ref='') {
+        const docs = userDemo.documents.filter(d => !ref || d.ref === ref);
+        showManagerShell(ref ? "Documents · " + ref : "My Documents", `
+          <div class="table-wrap">
+            <table class="manager-table">
+              <thead><tr><th>Reference</th><th>Document</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                ${docs.length ? docs.map(d => `
+                  <tr>
+                    <td>${esc(d.ref)}</td>
+                    <td>${esc(d.name)}</td>
+                    <td>${esc(d.type)}</td>
+                    <td>${esc(d.status)}</td>
+                    <td><button class="small-btn" type="button" onclick="showToast('${esc(d.name)} opened — frontend demo.')">${d.status.includes("Ready") ? "Download" : "View"}</button></td>
+                  </tr>`).join("") : `<tr><td colspan="5">No documents available yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        `);
+      }
+
+      function openUserMessagesDirect(ref='') {
+        showManagerShell(ref ? "Messages · " + ref : "Messages", `
+          <div class="quick-list">
+            ${userDemo.messages.map(m => `
+              <div class="quick-item">
+                <strong>${esc(m.subject)}</strong>
+                <span>${esc(m.from)} · ${esc(m.time)}</span>
+                <p style="margin:8px 0 0;color:var(--muted)">${esc(m.body)}</p>
+              </div>`).join("")}
+          </div>
+          <div class="mini-form" style="margin-top:18px">
+            <div class="field full">
+              <label>New message</label>
+              <textarea id="directUserMessage" placeholder="Type your message..." style="min-height:100px"></textarea>
+            </div>
+
+          </div>
+        `);
+      }
+
+      function sendUserMessageDirect(ref='') {
+        const el = document.getElementById("directUserMessage");
+        const value = el ? el.value.trim() : "";
+        if (!value) { managerNotice("Please type a message."); return; }
+        userDemo.messages.unshift({from:"You",subject:"Message sent",body:value,time:"Just now"});
+        openUserMessagesDirect(ref);
+        managerNotice("Message sent.");
+      }
+
+      function openUserProfileDirect() {
+        const loginEmail = document.getElementById("loggedInUserEmail")?.textContent || userDemo.profile.email || "";
+        userDemo.profile.email = loginEmail;
+        showManagerShell("My Profile", `
+          <form class="mini-form" id="directUserProfileForm">
+            <div class="field"><label>Full name</label><input name="name" value="${esc(userDemo.profile.name)}" required></div>
+            <div class="field"><label>Email</label><input name="email" type="email" value="${esc(userDemo.profile.email)}" required></div>
+            <div class="field"><label>Phone</label><input name="phone" value="${esc(userDemo.profile.phone)}"></div>
+
+          </form>
+        `);
+        document.getElementById("directUserProfileForm").onsubmit = e => {
+          e.preventDefault();
+          const f = new FormData(e.target);
+          userDemo.profile = {name:f.get("name"),email:f.get("email"),phone:f.get("phone")};
+          const label = document.getElementById("loggedInUserEmail");
+          if (label) label.textContent = userDemo.profile.email;
+          managerNotice("Profile updated.");
+        };
+      }
+
+      function openUserCancellationDirect(ref) {
+        showManagerShell("Request Cancellation · " + ref, `
+          <div class="mini-form">
+            <div class="field full">
+              <label>Cancellation reason</label>
+              <textarea id="directCancelReason" placeholder="Tell us why you want to request cancellation." style="min-height:110px"></textarea>
+            </div>
+
+          </div>
+        `);
+      }
+
+      function submitUserCancellationDirect() {
+        const reason = document.getElementById("directCancelReason")?.value.trim();
+        if (!reason) { managerNotice("Please enter a cancellation reason."); return; }
+        managerNotice("Cancellation request submitted.");
+      }
+
+      function startUserApplicationDirect() {
+        closeManager();
+        openApplicationPage("account", "user");
+      }
+
+
+      // ----- Dedicated application page navigation -----
+      let applicationReturnTarget = "home";
+
+      function setApplicationMode(mode){
+        const guest = mode === "guest";
+        document.body.classList.toggle("guest-mode", guest);
+
+        document.querySelectorAll(".mode-btn").forEach(btn=>{
+          btn.classList.toggle("active", btn.dataset.mode === (guest ? "guest" : "account"));
+        });
+
+        ["accountPassword","confirmPassword"].forEach(id=>{
+          const el = document.getElementById(id);
+          if(!el) return;
+          el.required = !guest;
+          if(guest) el.value = "";
+        });
+
+        const modeLabel = document.getElementById("applicationPageMode");
+        if(modeLabel){
+          modeLabel.textContent = guest ? "One-Time Guest Application" : "Account Application";
+        }
+
+        validatePasswords();
+      }
+
+      function openApplicationPage(mode="account", returnTarget="home"){
+        applicationReturnTarget = returnTarget;
+
+        const page = document.getElementById("applicationPage");
+        if(!page) return;
+
+        setApplicationMode(mode);
+        page.classList.add("active");
+        document.body.style.overflow = "hidden";
+        page.scrollTop = 0;
+      }
+
+      function closeApplicationPage(){
+        const page = document.getElementById("applicationPage");
+        if(page) page.classList.remove("active");
+        document.body.style.overflow = "";
+
+        if(applicationReturnTarget === "user"){
+          document.querySelectorAll(".workspace").forEach(w=>w.classList.remove("active"));
+          document.getElementById("userWorkspace")?.classList.add("active");
+          document.querySelector("main").style.display = "none";
+          document.querySelector(".site-header").style.display = "none";
+          document.querySelector("footer").style.display = "none";
+          window.scrollTo({top:0,behavior:"smooth"});
+        }
+      }
+
+
+      // ----- User registration stored in browser localStorage -----
+      const registerForm = document.getElementById("registerForm");
+      const goToUserLogin = document.getElementById("goToUserLogin");
+
+      function activatePortalTab(name){
+        document.querySelectorAll(".portal-tab").forEach(btn=>{
+          btn.classList.toggle("active", btn.dataset.portal === name);
+        });
+        document.querySelectorAll("[data-portal-pane]").forEach(pane=>{
+          pane.classList.toggle("active", pane.dataset.portalPane === name);
+        });
+      }
+
+      if (goToUserLogin) {
+        goToUserLogin.addEventListener("click", () => activatePortalTab("user"));
+      }
+
+      if (registerForm) {
+        registerForm.addEventListener("submit", e => {
+          e.preventDefault();
+          const msg = registerForm.querySelector(".form-message");
+          clearMessage(msg);
+
+          if (!registerForm.checkValidity()) {
+            registerForm.reportValidity();
+            showMessage(msg, "Please complete all required registration fields.", "error");
+            return;
+          }
+
+          const form = new FormData(registerForm);
+          const firstName = String(form.get("firstName") || "").trim();
+          const lastName = String(form.get("lastName") || "").trim();
+          const email = String(form.get("email") || "").trim().toLowerCase();
+          const phone = String(form.get("phone") || "").trim();
+          const password = String(form.get("password") || "");
+          const confirmPassword = String(form.get("confirmPassword") || "");
+
+          if (password !== confirmPassword) {
+            showMessage(msg, "Passwords do not match.", "error");
+            return;
+          }
+
+          const users = JSON.parse(localStorage.getItem("4incorpUsers") || "[]");
+
+          if (users.some(u => u.email.toLowerCase() === email)) {
+            showMessage(msg, "An account with this email already exists. Please sign in.", "error");
+            return;
+          }
+
+          users.push({
+            id: Date.now(),
+            firstName,
+            lastName,
+            email,
+            phone,
+            password
+          });
+
+          localStorage.setItem("4incorpUsers", JSON.stringify(users));
+          showMessage(msg, "Account created successfully. You can now sign in.", "success");
+
+          const userLoginForm = document.getElementById("userLoginForm");
+          if (userLoginForm && userLoginForm.elements.email) {
+            userLoginForm.elements.email.value = email;
+          }
+
+          setTimeout(() => activatePortalTab("user"), 700);
+        });
+      }
+
+
+      // ----- Password visibility buttons -----
+      function eyeIcon(hidden){
+        return hidden
+          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
+          : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 6.2A10.7 10.7 0 0 1 12 6c6 0 9.5 6 9.5 6a16.5 16.5 0 0 1-2.1 2.8M6.3 6.4C3.9 8.1 2.5 12 2.5 12s3.5 6 9.5 6c1.3 0 2.5-.3 3.5-.7M9.9 9.8a3 3 0 0 0 4.2 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+      }
+
+      function initEyeButtons(){
+        document.querySelectorAll("[data-eye-for]").forEach(btn=>{
+          const input=document.getElementById(btn.dataset.eyeFor);
+          if(!input) return;
+          btn.innerHTML=eyeIcon(true);
+          btn.onclick=()=>{
+            const hidden=input.type==="password";
+            input.type=hidden ? "text" : "password";
+            btn.innerHTML=eyeIcon(!hidden);
+            btn.setAttribute("aria-label", hidden ? "Hide password" : "Show password");
+          };
+        });
+      }
+      initEyeButtons();
+
+      // ----- OTP helpers -----
+      function generateOtp(){
+        return String(Math.floor(100000 + Math.random()*900000));
+      }
+
+      function readOtp(rowId){
+        return Array.from(document.querySelectorAll("#"+rowId+" .otp-input")).map(i=>i.value).join("");
+      }
+
+      function clearOtp(rowId){
+        document.querySelectorAll("#"+rowId+" .otp-input").forEach(i=>i.value="");
+      }
+
+      document.querySelectorAll(".otp-row").forEach(row=>{
+        const inputs=Array.from(row.querySelectorAll(".otp-input"));
+        inputs.forEach((input,index)=>{
+          input.addEventListener("input",()=>{
+            input.value=input.value.replace(/\D/g,"").slice(0,1);
+            if(input.value && inputs[index+1]) inputs[index+1].focus();
+          });
+          input.addEventListener("keydown",e=>{
+            if(e.key==="Backspace" && !input.value && inputs[index-1]) inputs[index-1].focus();
+          });
+          input.addEventListener("paste",e=>{
+            e.preventDefault();
+            const digits=(e.clipboardData.getData("text")||"").replace(/\D/g,"").slice(0,6);
+            digits.split("").forEach((d,i)=>{if(inputs[i]) inputs[i].value=d;});
+          });
+        });
+      });
+
+      // ----- Recovery UI state -----
+      let passwordResetOtp="";
+      let passwordResetEmail="";
+      let emailRecoveryOtp="";
+      let emailRecoveryAccount=null;
+
+      function closeRecoveryPanels(){
+        document.getElementById("forgotPasswordPanel")?.classList.remove("active");
+        document.getElementById("forgotEmailPanel")?.classList.remove("active");
+      }
+
+      function openRecoveryPanel(id){
+        closeRecoveryPanels();
+        document.querySelectorAll("[data-portal-pane]").forEach(p=>p.classList.remove("active"));
+        document.querySelectorAll(".portal-tab").forEach(t=>t.classList.remove("active"));
+        document.getElementById(id)?.classList.add("active");
+      }
+
+      document.getElementById("forgotPasswordBtn")?.addEventListener("click",()=>{
+        openRecoveryPanel("forgotPasswordPanel");
+        document.getElementById("forgotPasswordStep1").style.display="";
+        document.getElementById("forgotPasswordStep2").style.display="none";
+        document.getElementById("forgotPasswordStep3").style.display="none";
+      });
+
+      document.getElementById("forgotEmailBtn")?.addEventListener("click",()=>{
+        openRecoveryPanel("forgotEmailPanel");
+        document.getElementById("forgotEmailStep1").style.display="";
+        document.getElementById("forgotEmailStep2").style.display="none";
+        document.getElementById("forgotEmailStep3").style.display="none";
+      });
+
+      document.querySelectorAll("[data-close-recovery]").forEach(btn=>btn.addEventListener("click",()=>{
+        closeRecoveryPanels();
+        activatePortalTab("user");
+      }));
+
+      // ----- Forgot password -----
+      function sendPasswordOtp(){
+        const email=(document.getElementById("forgotPasswordEmail")?.value||"").trim().toLowerCase();
+        const users=JSON.parse(localStorage.getItem("4incorpUsers")||"[]");
+        const account=users.find(u=>u.email.toLowerCase()===email);
+
+        if(!account){
+          alert("No registered account was found with this email.");
+          return;
+        }
+
+        passwordResetEmail=email;
+        passwordResetOtp=generateOtp();
+        clearOtp("passwordOtpRow");
+
+        document.getElementById("forgotPasswordStep1").style.display="none";
+        document.getElementById("forgotPasswordStep2").style.display="";
+
+        const demo=document.getElementById("passwordDemoCode");
+        demo.textContent="Frontend demo code: "+passwordResetOtp+" — in production this 6-digit code will be sent to "+email+".";
+        demo.classList.add("show");
+      }
+
+      document.getElementById("sendPasswordCode")?.addEventListener("click",sendPasswordOtp);
+      document.getElementById("resendPasswordCode")?.addEventListener("click",sendPasswordOtp);
+
+      document.getElementById("verifyPasswordCode")?.addEventListener("click",()=>{
+        if(readOtp("passwordOtpRow")!==passwordResetOtp){
+          alert("Invalid verification code.");
+          return;
+        }
+        document.getElementById("forgotPasswordStep2").style.display="none";
+        document.getElementById("forgotPasswordStep3").style.display="";
+      });
+
+      document.getElementById("saveNewPassword")?.addEventListener("click",()=>{
+        const p=document.getElementById("newResetPassword")?.value||"";
+        const c=document.getElementById("confirmResetPassword")?.value||"";
+        const msg=document.getElementById("resetPasswordMessage");
+
+        if(p.length<8){
+          showMessage(msg,"Password must be at least 8 characters.","error");
+          return;
+        }
+        if(p!==c){
+          showMessage(msg,"Passwords do not match.","error");
+          return;
+        }
+
+        const users=JSON.parse(localStorage.getItem("4incorpUsers")||"[]");
+        const idx=users.findIndex(u=>u.email.toLowerCase()===passwordResetEmail);
+        if(idx<0){
+          showMessage(msg,"Account not found.","error");
+          return;
+        }
+
+        users[idx].password=p;
+        localStorage.setItem("4incorpUsers",JSON.stringify(users));
+        showMessage(msg,"Password updated successfully. You can now sign in.","success");
+
+        const login=document.getElementById("userLoginForm");
+        if(login?.elements?.email) login.elements.email.value=passwordResetEmail;
+
+        setTimeout(()=>{
+          closeRecoveryPanels();
+          activatePortalTab("user");
+        },900);
+      });
+
+      // ----- Forgot email -----
+      function sendEmailOtp(){
+        const phone=(document.getElementById("forgotEmailPhone")?.value||"").trim();
+        const users=JSON.parse(localStorage.getItem("4incorpUsers")||"[]");
+        const account=users.find(u=>(u.phone||"").trim()===phone);
+
+        if(!account){
+          alert("No registered account was found with this phone number.");
+          return;
+        }
+
+        emailRecoveryAccount=account;
+        emailRecoveryOtp=generateOtp();
+        clearOtp("emailOtpRow");
+
+        document.getElementById("forgotEmailStep1").style.display="none";
+        document.getElementById("forgotEmailStep2").style.display="";
+
+        const demo=document.getElementById("emailDemoCode");
+        demo.textContent="Frontend demo code: "+emailRecoveryOtp+" — in production this 6-digit verification code will be sent through your configured recovery email/SMS flow.";
+        demo.classList.add("show");
+      }
+
+      document.getElementById("sendEmailRecoveryCode")?.addEventListener("click",sendEmailOtp);
+      document.getElementById("resendEmailRecoveryCode")?.addEventListener("click",sendEmailOtp);
+
+      document.getElementById("verifyEmailRecoveryCode")?.addEventListener("click",()=>{
+        if(readOtp("emailOtpRow")!==emailRecoveryOtp){
+          alert("Invalid verification code.");
+          return;
+        }
+
+        document.getElementById("forgotEmailStep2").style.display="none";
+        document.getElementById("forgotEmailStep3").style.display="";
+        document.getElementById("recoveredEmail").textContent="Your registered email is: "+emailRecoveryAccount.email;
+      });
+
+      document.getElementById("backToLoginFromEmail")?.addEventListener("click",()=>{
+        const login=document.getElementById("userLoginForm");
+        if(login?.elements?.email && emailRecoveryAccount){
+          login.elements.email.value=emailRecoveryAccount.email;
+        }
+        closeRecoveryPanels();
+        activatePortalTab("user");
+      });
+
+      updateReview();
+    </script>
+  </body>
+</html>
