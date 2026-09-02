@@ -1,3 +1,5 @@
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -73,6 +75,27 @@
         background: rgba(255, 255, 255, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(14px);
+      }
+
+      .site-note {
+        color: #dce8f8;
+        background: #07142c;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .site-note .container {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .site-note a {
+        color: #fff;
+        text-decoration: underline;
+        text-underline-offset: 3px;
       }
 
       .nav {
@@ -571,8 +594,35 @@
       footer {
         color: #dce8f8;
         background: #050d1b;
-        padding: 30px 0;
+        padding: 46px 0 26px;
       }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+        gap: 28px;
+        padding-bottom: 30px;
+      }
+
+      .footer-brand {
+        color: #fff;
+        font-size: 21px;
+        font-weight: 900;
+      }
+
+      .footer-copy,
+      .footer-links a,
+      .legal-note {
+        color: #b9c9df;
+        font-size: 13px;
+      }
+
+      .footer-copy { max-width: 310px; margin: 10px 0 0; }
+      .footer-links { display: grid; gap: 9px; }
+      .footer-links strong { color: #fff; font-size: 14px; }
+      .footer-links a:hover { color: #fff; text-decoration: underline; }
+      .footer-bottom { border-top: 1px solid rgba(255,255,255,.16); padding-top: 20px; }
+      .legal-note { max-width: 860px; margin: 14px 0 0; line-height: 1.6; }
 
       .footer-row {
         display: flex;
@@ -668,6 +718,10 @@
         .form-grid {
           grid-template-columns: 1fr;
         }
+
+        .site-note .container { min-height: 48px; }
+
+        .footer-grid { grid-template-columns: 1fr; gap: 20px; }
       }
 
 
@@ -1309,6 +1363,12 @@
 </style>
   </head>
   <body>
+    <div class="site-note" role="note">
+      <div class="container">
+        <span>Notice: This website is under active development and is not currently serving live customer traffic.</span>
+        <a href="mailto:tax@itaxexperts.com">Questions? Contact support.</a>
+      </div>
+    </div>
     <header class="site-header">
       <div class="container nav">
         <a class="brand" href="#top" aria-label="4incorp.com home">
@@ -1330,11 +1390,11 @@
       <section class="hero">
         <div class="container hero-inner">
           <div class="hero-copy">
-            <span class="eyebrow">Business formation support across all 50 states</span>
-            <h1>Register Your Business. Build Your Future.</h1>
+            <span class="eyebrow">Business formation services available in all 50 states</span>
+            <h1>Establish Your Business With Confidence.</h1>
             <p>
-              4incorp.com helps entrepreneurs form LLCs, corporations, nonprofits,
-              DBAs, partnerships, and other business entities throughout the United States.
+              4incorp.com provides a clear, guided path to forming LLCs, corporations,
+              nonprofits, DBAs, partnerships, and other business entities across the United States.
             </p>
             <div class="hero-actions">
               <button class="primary" type="button" onclick="openApplicationPage('account')">Start Your Application</button>
@@ -2180,9 +2240,36 @@
     </section>
 
     <footer>
-      <div class="container footer-row">
-        <strong>4incorp.com</strong>
-        <span>Register Your Business. Build Your Future.</span>
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-brand">4incorp.com</div>
+            <p class="footer-copy">Guided business formation services for founders ready to build, launch, and grow with confidence.</p>
+          </div>
+          <div class="footer-links">
+            <strong>Services</strong>
+            <a href="#start-business">Start a Business</a>
+            <a href="#how-it-works">How It Works</a>
+          </div>
+          <div class="footer-links">
+            <strong>Client Access</strong>
+            <a href="#login">Client Portal</a>
+            <a href="#login">Track an Application</a>
+          </div>
+          <div class="footer-links">
+            <strong>Company</strong>
+            <a href="#top">About 4incorp.com</a>
+            <a href="#start-business">Contact Our Team</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-row">
+            <strong>© 2026 4incorp.com. All rights reserved.</strong>
+            <span>Business formation made clearer.</span>
+          </div>
+          <p class="legal-note">Information on this website is provided for general informational purposes only and does not constitute legal, tax, or financial advice. Please consult a qualified professional for advice specific to your circumstances.</p>
+          <p class="legal-note">For questions or assistance, please contact our support team at <a href="mailto:tax@itaxexperts.com">tax@itaxexperts.com</a>.</p>
+        </div>
       </div>
     </footer>
 
