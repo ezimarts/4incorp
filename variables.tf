@@ -64,3 +64,21 @@ variable "fourincorp_staff_emails" {
   type        = list(string)
   default     = []
 }
+
+variable "fourincorp_stripe_secret_name" {
+  description = "Secrets Manager name for the 4incorp Stripe API and webhook credentials"
+  type        = string
+  default     = "4incorp/stripe"
+}
+
+variable "fourincorp_stripe_success_url" {
+  description = "Browser URL Stripe redirects to after a successful Checkout session"
+  type        = string
+  default     = "https://4incorp.com/?payment=success"
+}
+
+variable "fourincorp_stripe_cancel_url" {
+  description = "Browser URL Stripe redirects to when Checkout is cancelled"
+  type        = string
+  default     = "https://4incorp.com/?payment=cancelled"
+}
