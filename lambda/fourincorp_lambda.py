@@ -32,6 +32,7 @@ STAFF_EMAILS = {
     if email.strip()
 }
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "*")
+ORDER_COUNTER_KEY = "__ORDER_COUNTER__"
 
 
 def now_iso():
@@ -219,8 +220,28 @@ def login(body):
     return response(200, {"user": public_user(user), "token": token_for(user)})
 
 
-def application_reference():
-    return "4INC-" + datetime.now(timezone.utc).strftime("%y%m%d") + secrets.token_hex(2).upper()
+def next_order_id():
+    result = APPLICATIONS_TABLE.update_item(
+        Key={"application_id": ORDER_COUNTER_KEY},
+        UpdateExpression="SET #order_id = if_not_exists(#order_id, :start) + :inc, #record_type = :record_type, #updated_at = :updated_at",
+        ExpressionAttributeNames={
+            "#order_id": "order_id",
+            "#record_type": "record_type",
+            "#updated_at": "updated_at",
+        },
+        ExpressionAttributeValues={
+            ":start": 100,
+            ":inc": 1,
+            ":record_type": "counter",
+            ":updated_at": now_iso(),
+        },
+        ReturnValues="UPDATED_NEW",
+    )
+    return int(result["Attributes"]["order_id"])
+
+
+def application_reference(order_id):
+    return f"4INC-{order_id:06d}"
 
 
 def application_from_body(body, actor=None):
@@ -250,9 +271,11 @@ def application_from_body(body, actor=None):
 
     now = now_iso()
     application_id = str(uuid.uuid4())
+    order_id = next_order_id()
     return {
         "application_id": application_id,
-        "reference": application_reference(),
+        "order_id": order_id,
+        "reference": application_reference(order_id),
         "user_id": actor.get("sub", "") if actor else "",
         "customer_email": customer_email,
         "customer_name": " ".join([first_name, last_name]).strip(),
@@ -288,7 +311,14 @@ def create_application(event):
     except ValueError as error:
         return response(400, {"message": str(error)})
     APPLICATIONS_TABLE.put_item(Item=application)
-    return response(201, {"application": application, "reference": application["reference"]})
+    return response(
+        201,
+        {
+            "application": application,
+            "reference": application["reference"],
+            "order_id": application["order_id"],
+        },
+    )
 
 
 def list_applications(event):
@@ -312,7 +342,8 @@ def list_applications(event):
             IndexName="customer-email-submitted-index",
             KeyConditionExpression=Key("customer_email").eq(actor["email"]),
         ).get("Items", [])
-    items.sort(key=lambda item: item.get("submitted_at", ""), reverse=True)
+    items = [item for item in items if item.get("application_id") != ORDER_COUNTER_KEY]
+    items.sort(key=lambda item: int(item.get("order_id", 0)), reverse=True)
     return response(200, {"applications": items})
 
 
