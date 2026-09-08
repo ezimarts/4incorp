@@ -13,7 +13,8 @@ terraform {
     }
   }
 }
-
 provider "aws" {
-  region = var.aws_region
+  region              = var.aws_region
+  profile             = "4incorp"
+  allowed_account_ids = ["424123860784"]
 }

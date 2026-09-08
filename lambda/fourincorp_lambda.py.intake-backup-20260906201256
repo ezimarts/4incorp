@@ -9,7 +9,6 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from botocore.exceptions import ClientError
 import boto3
 from boto3.dynamodb.conditions import Key
 
@@ -38,40 +37,6 @@ COGNITO_CLIENT_ID = os.environ["COGNITO_CLIENT_ID"]
 COGNITO_USER_POOL = os.environ["COGNITO_USER_POOL"]
 ORDER_COUNTER_KEY = "__ORDER_COUNTER__"
 CLIENT_COUNTER_KEY = "__CLIENT_COUNTER__"
-
-
-
-INTAKE_BUCKET = "4incorp.com-client-intake-forms"
-STATE_NAMES = {'alabama': 'Alabama', 'alaska': 'Alaska', 'arizona': 'Arizona', 'arkansas': 'Arkansas', 'california': 'California', 'colorado': 'Colorado', 'connecticut': 'Connecticut', 'delaware': 'Delaware', 'florida': 'Florida', 'georgia': 'Georgia', 'hawaii': 'Hawaii', 'idaho': 'Idaho', 'illinois': 'Illinois', 'indiana': 'Indiana', 'iowa': 'Iowa', 'kansas': 'Kansas', 'kentucky': 'Kentucky', 'louisiana': 'Louisiana', 'maine': 'Maine', 'maryland': 'Maryland', 'massachusetts': 'Massachusetts', 'michigan': 'Michigan', 'minnesota': 'Minnesota', 'mississippi': 'Mississippi', 'missouri': 'Missouri', 'montana': 'Montana', 'nebraska': 'Nebraska', 'nevada': 'Nevada', 'new hampshire': 'New Hampshire', 'new jersey': 'New Jersey', 'new mexico': 'New Mexico', 'new york': 'New York', 'north carolina': 'North Carolina', 'north dakota': 'North Dakota', 'ohio': 'Ohio', 'oklahoma': 'Oklahoma', 'oregon': 'Oregon', 'pennsylvania': 'Pennsylvania', 'rhode island': 'Rhode Island', 'south carolina': 'South Carolina', 'south dakota': 'South Dakota', 'tennessee': 'Tennessee', 'texas': 'Texas', 'utah': 'Utah', 'vermont': 'Vermont', 'virginia': 'Virginia', 'washington': 'Washington', 'west virginia': 'West Virginia', 'wisconsin': 'Wisconsin', 'wyoming': 'Wyoming', 'al': 'Alabama', 'ak': 'Alaska', 'az': 'Arizona', 'ar': 'Arkansas', 'ca': 'California', 'co': 'Colorado', 'ct': 'Connecticut', 'de': 'Delaware', 'fl': 'Florida', 'ga': 'Georgia', 'hi': 'Hawaii', 'id': 'Idaho', 'il': 'Illinois', 'in': 'Indiana', 'ia': 'Iowa', 'ks': 'Kansas', 'ky': 'Kentucky', 'la': 'Louisiana', 'me': 'Maine', 'md': 'Maryland', 'ma': 'Massachusetts', 'mi': 'Michigan', 'mn': 'Minnesota', 'ms': 'Mississippi', 'mo': 'Missouri', 'mt': 'Montana', 'ne': 'Nebraska', 'nv': 'Nevada', 'nh': 'New Hampshire', 'nj': 'New Jersey', 'nm': 'New Mexico', 'ny': 'New York', 'nc': 'North Carolina', 'nd': 'North Dakota', 'oh': 'Ohio', 'ok': 'Oklahoma', 'or': 'Oregon', 'pa': 'Pennsylvania', 'ri': 'Rhode Island', 'sc': 'South Carolina', 'sd': 'South Dakota', 'tn': 'Tennessee', 'tx': 'Texas', 'ut': 'Utah', 'vt': 'Vermont', 'va': 'Virginia', 'wa': 'Washington', 'wv': 'West Virginia', 'wi': 'Wisconsin', 'wy': 'Wyoming'}
-
-def intake_state(value):
-    state = STATE_NAMES.get(str(value).strip().lower())
-    if not state:
-        raise ValueError("Select a valid US state of registration")
-    return state
-
-def intake_component(value):
-    value = str(value)
-    if not value or not all(c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" for c in value):
-        raise ValueError("Invalid client or application identifier")
-    return value
-
-def intake_prefix(application):
-    return "/".join((intake_state(application["formation_state"]),
-                     intake_component(application["user_id"]),
-                     intake_component(application["application_id"]))) + "/"
-
-def initialize_intake(application):
-    prefix = intake_prefix(application)
-    application["intake_prefix"] = prefix
-    application["form_record_bucket"] = INTAKE_BUCKET
-    application["form_record_key"] = prefix + "intake/application.json"
-    for folder in ("intake", "documents", "correspondence", "receipts", "completed"):
-        s3.put_object(Bucket=INTAKE_BUCKET, Key=prefix + folder + "/", Body=b"",
-                      ServerSideEncryption="AES256")
-    s3.put_object(Bucket=INTAKE_BUCKET, Key=application["form_record_key"],
-                  Body=json.dumps(application, default=json_default).encode("utf-8"),
-                  ContentType="application/json", ServerSideEncryption="AES256")
 
 
 def now_iso():
@@ -260,12 +225,8 @@ def register(body):
     phone = str(body.get("phone", "")).strip()
     if not email or "@" not in email:
         return response(400, {"message": "A valid email is required"})
-    if (len(password) < 12 or not any(c.islower() for c in password)
-            or not any(c.isupper() for c in password) or not any(c.isdigit() for c in password)
-            or not any(not c.isalnum() and not c.isspace() for c in password)):
-        return response(400, {"message": "Use 12 or more characters including uppercase, lowercase, a number and a symbol"})
-    if not first_name or not last_name:
-        return response(400, {"message": "First and last names are required"})
+    if len(password) < 8:
+        return response(400, {"message": "Password must be at least 8 characters"})
     try:
         result = cognito.sign_up(
             ClientId=COGNITO_CLIENT_ID,
@@ -294,52 +255,32 @@ def register(body):
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
-    CLIENTS_TABLE.put_item(Item=user, ConditionExpression="attribute_not_exists(user_id)")
+    CLIENTS_TABLE.put_item(Item=user)
     return response(201, {"user": public_user(user), "confirmation_required": not result.get("UserConfirmed", False)})
-
-
-def sync_authenticated_client(access_token):
-    # Cognito, not an untrusted decoded JWT or request email, supplies identity.
-    result = cognito.get_user(AccessToken=access_token)
-    attrs = {a["Name"]: a["Value"] for a in result["UserAttributes"]}
-    if not attrs.get("sub") or attrs.get("email_verified") != "true":
-        raise ValueError("Verify your email before signing in")
-    first, last = attrs.get("given_name", ""), attrs.get("family_name", "")
-    values = {":email": attrs["email"].lower(), ":first": first, ":last": last,
-        ":name": " ".join([first, last]).strip(), ":phone": attrs.get("custom:phone", ""),
-        ":sub": attrs["sub"], ":status": "active", ":role": "customer", ":now": now_iso()}
-    user = CLIENTS_TABLE.update_item(Key={"user_id": attrs["sub"]},
-        UpdateExpression="SET email=:email, first_name=:first, last_name=:last, #name=:name, phone=:phone, cognito_sub=:sub, #status=:status, #role=if_not_exists(#role,:role), created_at=if_not_exists(created_at,:now), updated_at=:now",
-        ExpressionAttributeNames={"#name":"name", "#status":"status", "#role":"role"},
-        ExpressionAttributeValues=values, ReturnValues="ALL_NEW")["Attributes"]
-    return ensure_client_id(user)
 
 
 def login(body):
     email = str(body.get("email", "")).strip().lower()
     password = str(body.get("password", ""))
-    if not email or not password:
-        return response(400, {"message": "Email and password are required"})
-    result = cognito.initiate_auth(ClientId=COGNITO_CLIENT_ID,
-        AuthFlow="USER_PASSWORD_AUTH", AuthParameters={"USERNAME":email,"PASSWORD":password})
-    auth = result.get("AuthenticationResult", {})
-    if not auth.get("AccessToken") or not auth.get("IdToken"):
-        return response(409, {"message": "This account requires an additional authentication step; contact support", "code":"AUTH_CHALLENGE_REQUIRED"})
     try:
-        user = sync_authenticated_client(auth["AccessToken"])
-    except ValueError as error:
-        return response(403, {"message": str(error)})
-    return response(200, {"client_id": user["client_id"], "user": public_user(user),
-        "access_token": auth["AccessToken"], "id_token": auth["IdToken"],
-        "expires_in": auth.get("ExpiresIn")})
-
-
-def resend_confirmation(body):
-    email = str(body.get("email", "")).strip().lower()
-    if not email:
-        return response(400, {"message": "Email is required"})
-    cognito.resend_confirmation_code(ClientId=COGNITO_CLIENT_ID, Username=email)
-    return response(200, {"message": "Check your email for a confirmation code"})
+        result = cognito.initiate_auth(
+            ClientId=COGNITO_CLIENT_ID,
+            AuthFlow="USER_PASSWORD_AUTH",
+            AuthParameters={"USERNAME": email, "PASSWORD": password},
+        )
+    except (cognito.exceptions.NotAuthorizedException, cognito.exceptions.UserNotFoundException):
+        return response(401, {"message": "Invalid email or password"})
+    auth = result.get("AuthenticationResult", {})
+    user = client_by_email(email)
+    if user:
+        user = ensure_client_id(user)
+    return response(200, {
+        "client_id": int(user["client_id"]) if user and user.get("client_id") is not None else None,
+        "access_token": auth.get("AccessToken"),
+        "id_token": auth.get("IdToken"),
+        "refresh_token": auth.get("RefreshToken"),
+        "expires_in": auth.get("ExpiresIn"),
+    })
 
 
 def confirm_registration(body):
@@ -404,7 +345,7 @@ def application_from_body(body, actor=None):
     first_name = str(body.get("firstName") or body.get("first_name") or "").strip()
     last_name = str(body.get("lastName") or body.get("last_name") or "").strip()
     preferred_name = str(body.get("preferredName") or body.get("preferred_name") or "").strip()
-    formation_state = intake_state(body.get("formationState") or body.get("formation_state") or "")
+    formation_state = str(body.get("formationState") or body.get("formation_state") or "").strip()
     business_type = str(body.get("businessType") or body.get("business_type") or "").strip()
 
     missing = [
@@ -470,29 +411,35 @@ def application_from_body(body, actor=None):
 
 
 def create_application(event):
-    actor, error = require_actor(event)
-    if error:
-        return error
-    if not actor.get("sub"):
-        return response(401, {"message": "Sign in required"})
+    actor = actor_from_event(event)
     body = body_from_event(event)
-    # Clients cannot assign their submission to another email address.
-    if actor["role"] == "customer":
-        if not actor.get("email"):
-            return response(403, {"message": "An authenticated email is required"})
-        body["customerEmail"] = actor["email"]
     try:
         application = application_from_body(body, actor)
-        intake_prefix(application)
     except ValueError as error:
         return response(400, {"message": str(error)})
-    # S3 and DynamoDB are not transactional. Failures must be reconciled;
-    # no successful response is sent unless both writes finish.
-    initialize_intake(application)
-    APPLICATIONS_TABLE.put_item(Item=application,
-        ConditionExpression="attribute_not_exists(application_id)")
-    return response(201, {"application": application,
-        "reference": application["reference"], "order_id": application["order_id"]})
+    APPLICATIONS_TABLE.put_item(Item=application)
+    form_key = f"{application['client_id']}/forms/{application['reference']}/application.json"
+    s3.put_object(
+        Bucket=CLIENT_RECORDS_BUCKET,
+        Key=form_key,
+        Body=json.dumps(application, default=json_default).encode("utf-8"),
+        ContentType="application/json",
+        ServerSideEncryption="AES256",
+    )
+    APPLICATIONS_TABLE.update_item(
+        Key={"application_id": application["application_id"]},
+        UpdateExpression="SET form_record_key = :form_key",
+        ExpressionAttributeValues={":form_key": form_key},
+    )
+    application["form_record_key"] = form_key
+    return response(
+        201,
+        {
+            "application": application,
+            "reference": application["reference"],
+            "order_id": application["order_id"],
+        },
+    )
 
 
 def list_applications(event):
@@ -584,22 +531,17 @@ def create_document_upload(event, reference):
     application = get_application_by_reference(reference)
     if not application:
         return response(404, {"message": "Application not found"})
-    if actor["role"] == "customer" and (not actor.get("sub") or application.get("user_id") != actor["sub"]):
+    if actor["role"] == "customer" and application.get("customer_email") != actor["email"]:
         return response(403, {"message": "You cannot add documents to this application"})
 
     body = body_from_event(event)
-    file_name = str(body.get("file_name") or body.get("name") or "document").replace("\\", "/").split("/")[-1].strip()
-    if not file_name or file_name in {".", ".."} or "${" in file_name or any(ord(c) < 32 for c in file_name):
-        return response(400, {"message": "Invalid document filename"})
+    file_name = os.path.basename(str(body.get("file_name") or body.get("name") or "document").strip())
     content_type = str(body.get("content_type") or "application/octet-stream").strip()
     document_id = str(uuid.uuid4())
     client_id = application.get("client_id") or application.get("user_id") or f"guest-{application['application_id']}"
-    try:
-        key = intake_prefix(application) + f"documents/{document_id}/{file_name}"
-    except ValueError as error:
-        return response(400, {"message": str(error)})
+    key = f"{client_id}/documents/{reference}/{document_id}/{file_name}"
     upload = s3.generate_presigned_post(
-        Bucket=INTAKE_BUCKET,
+        Bucket=CLIENT_RECORDS_BUCKET,
         Key=key,
         Fields={"Content-Type": content_type},
         Conditions=[{"Content-Type": content_type}, ["content-length-range", 1, 15 * 1024 * 1024]],
@@ -613,7 +555,7 @@ def create_document_upload(event, reference):
         "name": file_name,
         "content_type": content_type,
         "s3_key": key,
-        "s3_bucket": INTAKE_BUCKET,
+        "s3_bucket": CLIENT_RECORDS_BUCKET,
         "status": "Waiting",
         "uploaded_by": actor["email"],
         "created_at": now_iso(),
@@ -680,8 +622,6 @@ def lambda_handler(event, context):
     try:
         if method == "POST" and path == "/auth/register":
             return register(body_from_event(event))
-        if method == "POST" and path == "/auth/resend-confirmation":
-            return resend_confirmation(body_from_event(event))
         if method == "POST" and path == "/auth/login":
             return login(body_from_event(event))
         if method == "POST" and path == "/auth/confirm":
@@ -709,24 +649,8 @@ def lambda_handler(event, context):
             return create_payment(event, parts[1])
     except json.JSONDecodeError:
         return response(400, {"message": "Invalid JSON body"})
-    except ClientError as error:
-        code = error.response.get("Error", {}).get("Code", "")
-        messages = {
-            "NotAuthorizedException": (401, "Invalid credentials or code"),
-            "UserNotFoundException": (401, "Invalid credentials or code"),
-            "UserNotConfirmedException": (403, "Confirm your email before signing in"),
-            "UsernameExistsException": (409, "Account exists. Sign in or confirm your email"),
-            "CodeMismatchException": (400, "Incorrect confirmation code"),
-            "ExpiredCodeException": (400, "Code expired. Request a new code"),
-            "InvalidPasswordException": (400, "Password does not meet the required policy"),
-            "InvalidParameterException": (400, "Check the supplied registration or authentication fields"),
-            "TooManyRequestsException": (429, "Too many attempts. Try again later"),
-            "LimitExceededException": (429, "Too many attempts. Try again later"),
-        }
-        status, message = messages.get(code, (503, "Service temporarily unavailable. Please retry"))
-        return response(status, {"message": message, "code": code})
     except Exception as error:
-        print("Unhandled error type", type(error).__name__)
+        print("Unhandled error", repr(error))
         return response(500, {"message": "Internal server error"})
 
     return response(404, {"message": "Route not found"})

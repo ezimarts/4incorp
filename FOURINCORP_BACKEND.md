@@ -8,7 +8,7 @@ frontend without changing the existing EZiMarts marketplace resources.
 - Private S3 bucket for frontend files.
 - CloudFront distribution for the frontend.
 - Private S3 bucket for application documents.
-- DynamoDB tables for users, applications, documents, payments, messages, and OTP records.
+- DynamoDB tables for clients, applications, documents, payments, and messages.
 - Python Lambda API for auth, applications, document uploads, messages, and manual payment records.
 - API Gateway HTTP API with CORS.
 - IAM role and least-scoped policies for the Lambda.

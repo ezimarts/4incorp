@@ -1,0 +1,320 @@
+(() => {
+  "use strict";
+
+  const config = window.FOURINCORP_CONFIG || {};
+  const apiBase = String(config.apiBaseUrl || "").replace(/\/$/, "");
+  if (!apiBase) {
+    ["registerForm", "userLoginForm", "adminLoginForm", "staffLoginForm"].forEach(id => {
+      const form = document.getElementById(id);
+      if (form) form.addEventListener("submit", event => {
+        event.preventDefault(); event.stopImmediatePropagation();
+        formMessage(form, "Service configuration is unavailable. Please try later.", "error");
+      }, true);
+    });
+    return;
+  }
+
+  const tokenKey = "4incorpIdToken";
+
+  async function request(path, options = {}) {
+    const token = sessionStorage.getItem(tokenKey);
+    const response = await fetch(`${apiBase}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {})
+      }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(data.message || `Request failed (${response.status})`);
+      error.code = data.code;
+      throw error;
+    }
+    return data;
+  }
+
+  function formMessage(form, message, type) {
+    const target = form.querySelector(".form-message");
+    if (!target) return;
+    target.textContent = message;
+    target.className = `form-message ${type}`;
+  }
+
+  function replaceForm(id, handler) {
+    const original = document.getElementById(id);
+    if (!original) return null;
+    const form = original.cloneNode(true);
+    original.replaceWith(form);
+    form.addEventListener("submit", handler);
+    return form;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    })[character]);
+  }
+
+  function openClientDashboard(email) {
+    document.querySelectorAll(".workspace").forEach(workspace => workspace.classList.remove("active"));
+    document.getElementById("userWorkspace")?.classList.add("active");
+    const label = document.getElementById("loggedInUserEmail");
+    if (label) label.textContent = email;
+    const main = document.querySelector("main");
+    const header = document.querySelector(".site-header");
+    const footer = document.querySelector("footer");
+    if (main) main.style.display = "none";
+    if (header) header.style.display = "none";
+    if (footer) footer.style.display = "none";
+    loadApplications();
+  }
+
+  async function loadApplications() {
+    if (!sessionStorage.getItem(tokenKey)) return;
+    try {
+      const result = await request("/applications");
+      const tbody = document.querySelector("#userWorkspace .demo-table tbody");
+      if (!tbody) return;
+      const applications = result.applications || [];
+      tbody.innerHTML = applications.length ? applications.map(application => `
+        <tr>
+          <td>${escapeHtml(application.reference)}</td>
+          <td>${escapeHtml(application.preferred_name)}</td>
+          <td>${escapeHtml(application.formation_state)}</td>
+          <td><span class="tiny-status">${escapeHtml(application.status)}</span></td>
+          <td><button class="small-btn" type="button" onclick="window.fourincorpUploadDocument('${escapeHtml(application.reference)}')">Upload document</button></td>
+        </tr>`).join("") : '<tr><td colspan="5">No applications have been submitted yet.</td></tr>';
+    } catch (error) {
+      console.error("Could not load applications", error);
+    }
+  }
+
+  async function uploadDocument(reference) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.png,.jpg,.jpeg,.doc,.docx";
+    input.addEventListener("change", async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const result = await request(`/applications/${encodeURIComponent(reference)}/documents`, {
+          method: "POST",
+          body: JSON.stringify({ file_name: file.name, content_type: file.type || "application/octet-stream" })
+        });
+        const uploadData = new FormData();
+        Object.entries(result.upload.fields || {}).forEach(([key, value]) => uploadData.append(key, value));
+        uploadData.append("file", file);
+        const uploadResponse = await fetch(result.upload.url, { method: "POST", body: uploadData });
+        if (!uploadResponse.ok) throw new Error(`Document upload failed (${uploadResponse.status})`);
+        window.alert("Document uploaded successfully.");
+      } catch (error) {
+        window.alert(error.message);
+      }
+    }, { once: true });
+    input.click();
+  }
+
+  const passwordHint = "Use at least 12 characters, uppercase, lowercase, a number and a symbol.";
+  const strongPassword = value => value.length >= 12 && /[a-z]/.test(value) && /[A-Z]/.test(value) && /[0-9]/.test(value) && /[^a-zA-Z0-9\s]/.test(value);
+  const confirmation = document.createElement("form");
+  confirmation.className = "form-grid";
+  confirmation.innerHTML = `<div class="field full"><label>Confirm your account email<input name="email" type="email" autocomplete="email" required></label></div>
+    <div class="field full"><label>Email confirmation code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required></label></div>
+    <div class="form-actions"><button type="submit" class="primary">Confirm email</button><button type="button" class="secondary" data-resend>Resend code</button></div><div class="form-message" role="status"></div>`;
+  const confirmPanel = document.createElement("details");
+  const summary = document.createElement("summary");
+  summary.textContent = "Already registered? Confirm your email";
+  confirmPanel.append(summary, confirmation);
+  document.getElementById("registerForm")?.after(confirmPanel);
+  function showConfirmation(email) {
+    confirmation.elements.email.value = email;
+    confirmPanel.open = true;
+  }
+  async function busy(form, action) {
+    if (form.dataset.busy) return;
+    form.dataset.busy = "true";
+    const buttons = [...form.querySelectorAll("button")];
+    buttons.forEach(button => button.disabled = true);
+    try { await action(); }
+    catch (error) { formMessage(form, error.message, "error"); }
+    finally { delete form.dataset.busy; buttons.forEach(button => button.disabled = false); }
+  }
+  confirmation.addEventListener("submit", event => {
+    event.preventDefault();
+    if (!confirmation.reportValidity()) return;
+    busy(confirmation, async () => {
+      await request("/auth/confirm", {method:"POST", body:JSON.stringify(Object.fromEntries(new FormData(confirmation)))});
+      formMessage(confirmation, "Email confirmed. You can now sign in.", "success");
+    });
+  });
+  confirmation.querySelector("[data-resend]").addEventListener("click", () => busy(confirmation, async () => {
+    if (!confirmation.elements.email.reportValidity()) return;
+    await request("/auth/resend-confirmation", {method:"POST", body:JSON.stringify({email:confirmation.elements.email.value})});
+    formMessage(confirmation, "A new confirmation code has been requested.", "success");
+  }));
+
+  const registration = replaceForm("registerForm", event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const values = Object.fromEntries(new FormData(form));
+    if (values.password !== values.confirmPassword || !strongPassword(values.password)) {
+      formMessage(form, values.password !== values.confirmPassword ? "Passwords do not match." : passwordHint, "error"); return;
+    }
+    busy(form, async () => {
+      // Whitelist registration attributes; roles and IDs are never client-controlled.
+      const payload = Object.fromEntries(["firstName","lastName","email","phone","password"].map(key => [key,values[key] || ""]));
+      const result = await request("/auth/register", {method:"POST", body:JSON.stringify(payload)});
+      form.elements.password.value = "";
+      form.elements.confirmPassword.value = "";
+      showConfirmation(values.email);
+      formMessage(form, result.confirmation_required ? "Check your email and enter the confirmation code below." : "Account created. You can sign in.", "success");
+    });
+  });
+  if (registration) {
+    registration.elements.password.minLength = 12;
+    const hint = document.createElement("p"); hint.className="hint"; hint.textContent=passwordHint;
+    registration.append(hint);
+  }
+  replaceForm("userLoginForm", event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const values = Object.fromEntries(new FormData(form));
+    busy(form, async () => {
+      sessionStorage.removeItem(tokenKey);
+      const result = await request("/auth/login", {method:"POST", body:JSON.stringify(values)});
+      if (!result.id_token) throw new Error("Sign-in did not complete. Please try again.");
+      sessionStorage.setItem(tokenKey, result.id_token);
+      form.elements.password.value = "";
+      formMessage(form, "Signed in.", "success");
+      openClientDashboard(result.user?.email || String(values.email || ""));
+    });
+  });
+  document.querySelectorAll(".workspace-logout").forEach(button => button.addEventListener("click", () => sessionStorage.removeItem(tokenKey)));
+
+  // Replace browser-only recovery listeners with Cognito requests.
+  function bindButton(id, handler) {
+    const old = document.getElementById(id);
+    if (!old) return;
+    const button = old.cloneNode(true); button.removeAttribute("onclick"); old.replaceWith(button);
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      try { await handler(); } catch (error) { window.alert(error.message); }
+      finally { button.disabled = false; }
+    });
+  }
+  // replaceForm clones the login form, so reconnect its recovery controls.
+  function openRecovery(id) {
+    document.querySelectorAll(".recovery-shell").forEach(panel => panel.classList.remove("active"));
+    document.querySelectorAll("[data-portal-pane]").forEach(panel => panel.classList.remove("active"));
+    document.querySelectorAll(".portal-tab").forEach(tab => tab.classList.remove("active"));
+    document.getElementById(id)?.classList.add("active");
+  }
+  bindButton("forgotPasswordBtn", () => {
+    openRecovery("forgotPasswordPanel");
+    recoveryEmail = "";
+    document.getElementById("forgotPasswordEmail").value = document.getElementById("userLoginForm")?.elements.email.value || "";
+    document.getElementById("forgotPasswordStep1").style.display = "";
+    document.getElementById("forgotPasswordStep2").style.display = "none";
+    document.getElementById("forgotPasswordStep3").style.display = "none";
+    document.querySelectorAll("#passwordOtpRow .otp-input").forEach(input => input.value = "");
+    document.getElementById("newResetPassword").value = "";
+    document.getElementById("confirmResetPassword").value = "";
+    document.getElementById("forgotPasswordEmail").focus();
+  });
+  bindButton("forgotEmailBtn", () => {
+    openRecovery("forgotEmailPanel");
+    const panel = document.getElementById("forgotEmailPanel");
+    panel.replaceChildren();
+    const heading = document.createElement("h3"); heading.textContent = "Forgot your email?";
+    const note = document.createElement("p");
+    note.textContent = "Automatic email recovery is not available yet. Check your inboxes for your 4incorp registration email, or contact the 4incorp team through the website's published contact details for help verifying your account.";
+    const back = document.createElement("button"); back.type = "button"; back.className = "secondary"; back.textContent = "Back to sign in";
+    back.addEventListener("click", () => {
+      panel.classList.remove("active");
+      document.getElementById("userLoginForm")?.classList.add("active");
+      document.querySelector('[data-portal="user"]')?.classList.add("active");
+    });
+    panel.append(heading, note, back);
+  });
+  const nextButton = document.getElementById("verifyPasswordCode");
+  if (nextButton) nextButton.textContent = "Continue to new password";
+  // Allow correcting an expired or mistyped code after Cognito rejects a reset.
+  const editCode = document.createElement("button");
+  editCode.type = "button"; editCode.className = "secondary"; editCode.textContent = "Edit or resend code";
+  editCode.addEventListener("click", () => {
+    document.getElementById("forgotPasswordStep3").style.display = "none";
+    document.getElementById("forgotPasswordStep2").style.display = "";
+  });
+  document.getElementById("saveNewPassword")?.after(editCode);
+  let recoveryEmail = "";
+  const recoveryCode = () => [...document.querySelectorAll("#passwordOtpRow .otp-input")].map(input => input.value).join("");
+  async function sendRecovery() {
+    const emailInput = document.getElementById("forgotPasswordEmail");
+    emailInput.required = true;
+    if (!emailInput.reportValidity()) return;
+    recoveryEmail = emailInput.value.trim();
+    await request("/auth/forgot-password", {method:"POST", body:JSON.stringify({email:recoveryEmail})});
+    document.getElementById("forgotPasswordStep1").style.display="none";
+    document.getElementById("forgotPasswordStep2").style.display="";
+    document.getElementById("passwordDemoCode").textContent="If your account is eligible, check your email for a recovery code.";
+    document.getElementById("passwordDemoCode").classList.add("show");
+    document.querySelectorAll("#passwordOtpRow .otp-input").forEach(input => input.value = "");
+  }
+  bindButton("sendPasswordCode", sendRecovery);
+  bindButton("resendPasswordCode", sendRecovery);
+  bindButton("verifyPasswordCode", () => {
+    if (!/^[0-9]{6}$/.test(recoveryCode())) throw new Error("Enter the six-digit code from your email.");
+    // Cognito validates the code when the new password is submitted.
+    document.getElementById("forgotPasswordStep2").style.display="none";
+    document.getElementById("forgotPasswordStep3").style.display="";
+  });
+  bindButton("saveNewPassword", async () => {
+    const password = document.getElementById("newResetPassword").value;
+    if (password !== document.getElementById("confirmResetPassword").value) throw new Error("Passwords do not match.");
+    if (!strongPassword(password)) throw new Error(passwordHint);
+    await request("/auth/confirm-forgot-password", {method:"POST", body:JSON.stringify({email:recoveryEmail,code:recoveryCode(),password})});
+    document.getElementById("newResetPassword").value="";
+    document.getElementById("confirmResetPassword").value="";
+    sessionStorage.removeItem(tokenKey);
+    document.getElementById("forgotPasswordPanel").classList.remove("active");
+    const loginForm = document.getElementById("userLoginForm");
+    loginForm.classList.add("active");
+    loginForm.elements.email.value = recoveryEmail;
+    document.querySelector('[data-portal="user"]')?.classList.add("active");
+    formMessage(loginForm, "Password updated. Sign in with your new password.", "success");
+  });
+  ["sendEmailRecoveryCode","resendEmailRecoveryCode","verifyEmailRecoveryCode"].forEach(id => bindButton(id, () => {
+    throw new Error("Contact support to recover a forgotten email address.");
+  }));
+
+  const applicationForm = replaceForm("applicationForm", async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const values = Object.fromEntries(new FormData(form).entries());
+    delete values.accountPassword;
+    delete values.confirmPassword;
+    delete values.password;
+    try {
+      const submissionPath = sessionStorage.getItem(tokenKey) ? "/applications" : "/guest/applications";
+      const result = await request(submissionPath, { method: "POST", body: JSON.stringify(values) });
+      formMessage(form, `Application submitted. Order ${result.order_id}; reference ${result.reference}.`, "success");
+      await loadApplications();
+    } catch (error) {
+      formMessage(form, error.message, "error");
+    }
+  });
+
+  if (applicationForm && typeof window.updateReview === "function") {
+    applicationForm.addEventListener("input", window.updateReview);
+    applicationForm.addEventListener("change", window.updateReview);
+  }
+
+  if (typeof window.initEyeButtons === "function") window.initEyeButtons();
+  window.fourincorpUploadDocument = uploadDocument;
+  window.fourincorpApi = { request, loadApplications, uploadDocument };
+})();

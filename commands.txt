@@ -1,0 +1,22 @@
+## to test users registration from commandline
+$body = @{
+    firstName = "Test"
+    lastName  = "User"
+    email     = "testuser123@4incorp.com"
+    phone     = "3025551212"
+    password  = "TestPass123!"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Uri "https://rgkwt6xuti.execute-api.us-east-1.amazonaws.com/prod/auth/register" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body $body
+
+  ## profiles commands
+  aws configure list-profiles
+  aws sso login --profile your-profile-name
+
+  terraform apply "recovery.tfplan"
+$distribution = terraform output -raw registration_cloudfront_id
+aws cloudfront create-invalidation --profile 4incorp --distribution-id $distribution --paths "/production-api.js*"

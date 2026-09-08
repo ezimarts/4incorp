@@ -8,3 +8,6 @@ crash.*.log
 *.zip
 __pycache__/
 *.pyc
+
+.tmp/
+*.tfplan

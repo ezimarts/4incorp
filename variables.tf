@@ -31,13 +31,43 @@ variable "fourincorp_allowed_origin" {
 variable "fourincorp_frontend_bucket_name" {
   description = "Private S3 bucket that stores the 4incorp frontend files"
   type        = string
-  default     = "4incorp.com"
+  default     = "4incorp.com-web"
 }
 
 variable "fourincorp_documents_bucket_name" {
   description = "Private S3 bucket that stores uploaded application documents"
   type        = string
-  default     = "4incorp-application-documents"
+  default     = "4incorp.com-documents"
+}
+
+variable "fourincorp_client_records_bucket_name" {
+  description = "Private S3 bucket for client form snapshots and client documents"
+  type        = string
+  default     = "clients-doc-record-4incorp"
+}
+
+variable "fourincorp_route53_zone_id" {
+  description = "Optional Route 53 hosted-zone ID. Leave blank to discover the public 4incorp.com zone."
+  type        = string
+  default     = "Z04287301AJOFEKLBJ63Z"
+}
+
+variable "fourincorp_stripe_secret_name" {
+  description = "Secrets Manager name containing StripeSecretKey and StripeWebhookSecret JSON keys"
+  type        = string
+  default     = "4incorp/prod/stripe"
+}
+
+variable "fourincorp_stripe_success_url" {
+  description = "Stripe Checkout success redirect"
+  type        = string
+  default     = "https://4incorp.com/?payment=success&session_id={CHECKOUT_SESSION_ID}"
+}
+
+variable "fourincorp_stripe_cancel_url" {
+  description = "Stripe Checkout cancellation redirect"
+  type        = string
+  default     = "https://4incorp.com/?payment=cancelled"
 }
 
 variable "fourincorp_acm_certificate_arn" {
@@ -65,20 +95,6 @@ variable "fourincorp_staff_emails" {
   default     = []
 }
 
-variable "fourincorp_stripe_secret_name" {
-  description = "Secrets Manager name for the 4incorp Stripe API and webhook credentials"
-  type        = string
-  default     = "4incorp/stripe"
-}
 
-variable "fourincorp_stripe_success_url" {
-  description = "Browser URL Stripe redirects to after a successful Checkout session"
-  type        = string
-  default     = "https://4incorp.com/?payment=success"
-}
 
-variable "fourincorp_stripe_cancel_url" {
-  description = "Browser URL Stripe redirects to when Checkout is cancelled"
-  type        = string
-  default     = "https://4incorp.com/?payment=cancelled"
-}
+

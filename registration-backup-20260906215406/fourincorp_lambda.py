@@ -9,7 +9,6 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from botocore.exceptions import ClientError
 import boto3
 from boto3.dynamodb.conditions import Key
 
@@ -260,12 +259,8 @@ def register(body):
     phone = str(body.get("phone", "")).strip()
     if not email or "@" not in email:
         return response(400, {"message": "A valid email is required"})
-    if (len(password) < 12 or not any(c.islower() for c in password)
-            or not any(c.isupper() for c in password) or not any(c.isdigit() for c in password)
-            or not any(not c.isalnum() and not c.isspace() for c in password)):
-        return response(400, {"message": "Use 12 or more characters including uppercase, lowercase, a number and a symbol"})
-    if not first_name or not last_name:
-        return response(400, {"message": "First and last names are required"})
+    if len(password) < 8:
+        return response(400, {"message": "Password must be at least 8 characters"})
     try:
         result = cognito.sign_up(
             ClientId=COGNITO_CLIENT_ID,
@@ -294,52 +289,32 @@ def register(body):
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
-    CLIENTS_TABLE.put_item(Item=user, ConditionExpression="attribute_not_exists(user_id)")
+    CLIENTS_TABLE.put_item(Item=user)
     return response(201, {"user": public_user(user), "confirmation_required": not result.get("UserConfirmed", False)})
-
-
-def sync_authenticated_client(access_token):
-    # Cognito, not an untrusted decoded JWT or request email, supplies identity.
-    result = cognito.get_user(AccessToken=access_token)
-    attrs = {a["Name"]: a["Value"] for a in result["UserAttributes"]}
-    if not attrs.get("sub") or attrs.get("email_verified") != "true":
-        raise ValueError("Verify your email before signing in")
-    first, last = attrs.get("given_name", ""), attrs.get("family_name", "")
-    values = {":email": attrs["email"].lower(), ":first": first, ":last": last,
-        ":name": " ".join([first, last]).strip(), ":phone": attrs.get("custom:phone", ""),
-        ":sub": attrs["sub"], ":status": "active", ":role": "customer", ":now": now_iso()}
-    user = CLIENTS_TABLE.update_item(Key={"user_id": attrs["sub"]},
-        UpdateExpression="SET email=:email, first_name=:first, last_name=:last, #name=:name, phone=:phone, cognito_sub=:sub, #status=:status, #role=if_not_exists(#role,:role), created_at=if_not_exists(created_at,:now), updated_at=:now",
-        ExpressionAttributeNames={"#name":"name", "#status":"status", "#role":"role"},
-        ExpressionAttributeValues=values, ReturnValues="ALL_NEW")["Attributes"]
-    return ensure_client_id(user)
 
 
 def login(body):
     email = str(body.get("email", "")).strip().lower()
     password = str(body.get("password", ""))
-    if not email or not password:
-        return response(400, {"message": "Email and password are required"})
-    result = cognito.initiate_auth(ClientId=COGNITO_CLIENT_ID,
-        AuthFlow="USER_PASSWORD_AUTH", AuthParameters={"USERNAME":email,"PASSWORD":password})
-    auth = result.get("AuthenticationResult", {})
-    if not auth.get("AccessToken") or not auth.get("IdToken"):
-        return response(409, {"message": "This account requires an additional authentication step; contact support", "code":"AUTH_CHALLENGE_REQUIRED"})
     try:
-        user = sync_authenticated_client(auth["AccessToken"])
-    except ValueError as error:
-        return response(403, {"message": str(error)})
-    return response(200, {"client_id": user["client_id"], "user": public_user(user),
-        "access_token": auth["AccessToken"], "id_token": auth["IdToken"],
-        "expires_in": auth.get("ExpiresIn")})
-
-
-def resend_confirmation(body):
-    email = str(body.get("email", "")).strip().lower()
-    if not email:
-        return response(400, {"message": "Email is required"})
-    cognito.resend_confirmation_code(ClientId=COGNITO_CLIENT_ID, Username=email)
-    return response(200, {"message": "Check your email for a confirmation code"})
+        result = cognito.initiate_auth(
+            ClientId=COGNITO_CLIENT_ID,
+            AuthFlow="USER_PASSWORD_AUTH",
+            AuthParameters={"USERNAME": email, "PASSWORD": password},
+        )
+    except (cognito.exceptions.NotAuthorizedException, cognito.exceptions.UserNotFoundException):
+        return response(401, {"message": "Invalid email or password"})
+    auth = result.get("AuthenticationResult", {})
+    user = client_by_email(email)
+    if user:
+        user = ensure_client_id(user)
+    return response(200, {
+        "client_id": int(user["client_id"]) if user and user.get("client_id") is not None else None,
+        "access_token": auth.get("AccessToken"),
+        "id_token": auth.get("IdToken"),
+        "refresh_token": auth.get("RefreshToken"),
+        "expires_in": auth.get("ExpiresIn"),
+    })
 
 
 def confirm_registration(body):
@@ -680,8 +655,6 @@ def lambda_handler(event, context):
     try:
         if method == "POST" and path == "/auth/register":
             return register(body_from_event(event))
-        if method == "POST" and path == "/auth/resend-confirmation":
-            return resend_confirmation(body_from_event(event))
         if method == "POST" and path == "/auth/login":
             return login(body_from_event(event))
         if method == "POST" and path == "/auth/confirm":
@@ -709,24 +682,8 @@ def lambda_handler(event, context):
             return create_payment(event, parts[1])
     except json.JSONDecodeError:
         return response(400, {"message": "Invalid JSON body"})
-    except ClientError as error:
-        code = error.response.get("Error", {}).get("Code", "")
-        messages = {
-            "NotAuthorizedException": (401, "Invalid credentials or code"),
-            "UserNotFoundException": (401, "Invalid credentials or code"),
-            "UserNotConfirmedException": (403, "Confirm your email before signing in"),
-            "UsernameExistsException": (409, "Account exists. Sign in or confirm your email"),
-            "CodeMismatchException": (400, "Incorrect confirmation code"),
-            "ExpiredCodeException": (400, "Code expired. Request a new code"),
-            "InvalidPasswordException": (400, "Password does not meet the required policy"),
-            "InvalidParameterException": (400, "Check the supplied registration or authentication fields"),
-            "TooManyRequestsException": (429, "Too many attempts. Try again later"),
-            "LimitExceededException": (429, "Too many attempts. Try again later"),
-        }
-        status, message = messages.get(code, (503, "Service temporarily unavailable. Please retry"))
-        return response(status, {"message": message, "code": code})
     except Exception as error:
-        print("Unhandled error type", type(error).__name__)
+        print("Unhandled error", repr(error))
         return response(500, {"message": "Internal server error"})
 
     return response(404, {"message": "Route not found"})

@@ -2,8 +2,8 @@ locals {
   fourincorp_allowed_origin = var.fourincorp_allowed_origin != "" ? var.fourincorp_allowed_origin : "https://${var.fourincorp_domain_name}"
 }
 
-resource "aws_dynamodb_table" "fourincorp_users" {
-  name         = "${var.fourincorp_stack_name}-users"
+resource "aws_dynamodb_table" "fourincorp_clients" {
+  name         = "${var.fourincorp_stack_name}-clients"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"
 
@@ -22,6 +22,11 @@ resource "aws_dynamodb_table" "fourincorp_users" {
     type = "S"
   }
 
+  attribute {
+    name = "client_id"
+    type = "N"
+  }
+
   global_secondary_index {
     name            = "email-index"
     hash_key        = "email"
@@ -31,6 +36,12 @@ resource "aws_dynamodb_table" "fourincorp_users" {
   global_secondary_index {
     name            = "phone-index"
     hash_key        = "phone"
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name            = "client-id-index"
+    hash_key        = "client_id"
     projection_type = "ALL"
   }
 
@@ -80,6 +91,16 @@ resource "aws_dynamodb_table" "fourincorp_applications" {
     type = "S"
   }
 
+  attribute {
+    name = "record_type"
+    type = "S"
+  }
+
+  attribute {
+    name = "order_id"
+    type = "N"
+  }
+
   global_secondary_index {
     name            = "reference-index"
     hash_key        = "reference"
@@ -104,6 +125,13 @@ resource "aws_dynamodb_table" "fourincorp_applications" {
     name            = "assigned-staff-index"
     hash_key        = "assigned_staff_email"
     range_key       = "updated_at"
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name            = "all-orders-index"
+    hash_key        = "record_type"
+    range_key       = "order_id"
     projection_type = "ALL"
   }
 
@@ -212,27 +240,6 @@ resource "aws_dynamodb_table" "fourincorp_messages" {
   }
 }
 
-resource "aws_dynamodb_table" "fourincorp_otps" {
-  name         = "${var.fourincorp_stack_name}-otps"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "otp_id"
-
-  attribute {
-    name = "otp_id"
-    type = "S"
-  }
-
-  ttl {
-    attribute_name = "expires_at"
-    enabled        = true
-  }
-
-  tags = {
-    Application = "4incorp"
-    Environment = var.fourincorp_environment
-  }
-}
-
 resource "aws_s3_bucket" "fourincorp_documents" {
   bucket = var.fourincorp_documents_bucket_name
 
@@ -262,6 +269,54 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "fourincorp_docume
 
 resource "aws_s3_bucket_cors_configuration" "fourincorp_documents" {
   bucket = aws_s3_bucket.fourincorp_documents.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["POST", "PUT", "GET", "HEAD"]
+    allowed_origins = [local.fourincorp_allowed_origin]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+}
+
+resource "aws_s3_bucket" "fourincorp_client_records" {
+  bucket = var.fourincorp_client_records_bucket_name
+
+  tags = {
+    Application = "4incorp"
+    Environment = var.fourincorp_environment
+    DataClass   = "ClientRecords"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "fourincorp_client_records" {
+  bucket                  = aws_s3_bucket.fourincorp_client_records.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "fourincorp_client_records" {
+  bucket = aws_s3_bucket.fourincorp_client_records.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "fourincorp_client_records" {
+  bucket = aws_s3_bucket.fourincorp_client_records.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_cors_configuration" "fourincorp_client_records" {
+  bucket = aws_s3_bucket.fourincorp_client_records.id
 
   cors_rule {
     allowed_headers = ["*"]
@@ -302,7 +357,7 @@ resource "aws_cloudfront_distribution" "fourincorp_frontend" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
   comment             = "${var.fourincorp_stack_name} frontend"
-  aliases             = var.fourincorp_acm_certificate_arn == "" ? [] : [var.fourincorp_domain_name, "www.${var.fourincorp_domain_name}"]
+  aliases             = [var.fourincorp_domain_name, "www.${var.fourincorp_domain_name}"]
 
   origin {
     domain_name              = aws_s3_bucket.fourincorp_frontend.bucket_regional_domain_name
@@ -338,10 +393,9 @@ resource "aws_cloudfront_distribution" "fourincorp_frontend" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = var.fourincorp_acm_certificate_arn == "" ? null : var.fourincorp_acm_certificate_arn
-    cloudfront_default_certificate = var.fourincorp_acm_certificate_arn == ""
-    minimum_protocol_version       = var.fourincorp_acm_certificate_arn == "" ? null : "TLSv1.2_2021"
-    ssl_support_method             = var.fourincorp_acm_certificate_arn == "" ? null : "sni-only"
+    acm_certificate_arn      = aws_acm_certificate_validation.fourincorp.certificate_arn
+    minimum_protocol_version = "TLSv1.2_2021"
+    ssl_support_method       = "sni-only"
   }
 }
 
@@ -412,8 +466,8 @@ resource "aws_iam_role_policy" "fourincorp_lambda" {
           "dynamodb:Scan"
         ]
         Resource = [
-          aws_dynamodb_table.fourincorp_users.arn,
-          "${aws_dynamodb_table.fourincorp_users.arn}/index/*",
+          aws_dynamodb_table.fourincorp_clients.arn,
+          "${aws_dynamodb_table.fourincorp_clients.arn}/index/*",
           aws_dynamodb_table.fourincorp_applications.arn,
           "${aws_dynamodb_table.fourincorp_applications.arn}/index/*",
           aws_dynamodb_table.fourincorp_documents.arn,
@@ -421,8 +475,7 @@ resource "aws_iam_role_policy" "fourincorp_lambda" {
           aws_dynamodb_table.fourincorp_payments.arn,
           "${aws_dynamodb_table.fourincorp_payments.arn}/index/*",
           aws_dynamodb_table.fourincorp_messages.arn,
-          "${aws_dynamodb_table.fourincorp_messages.arn}/index/*",
-          aws_dynamodb_table.fourincorp_otps.arn
+          "${aws_dynamodb_table.fourincorp_messages.arn}/index/*"
         ]
       },
       {
@@ -432,7 +485,10 @@ resource "aws_iam_role_policy" "fourincorp_lambda" {
           "s3:GetObject",
           "s3:DeleteObject"
         ]
-        Resource = "${aws_s3_bucket.fourincorp_documents.arn}/*"
+        Resource = [
+          "${aws_s3_bucket.fourincorp_documents.arn}/*",
+          "${aws_s3_bucket.fourincorp_client_records.arn}/*"
+        ]
       }
     ]
   })
@@ -450,17 +506,19 @@ resource "aws_lambda_function" "fourincorp_api" {
 
   environment {
     variables = {
-      USERS_TABLE        = aws_dynamodb_table.fourincorp_users.name
-      APPLICATIONS_TABLE = aws_dynamodb_table.fourincorp_applications.name
-      DOCUMENTS_TABLE    = aws_dynamodb_table.fourincorp_documents.name
-      PAYMENTS_TABLE     = aws_dynamodb_table.fourincorp_payments.name
-      MESSAGES_TABLE     = aws_dynamodb_table.fourincorp_messages.name
-      OTPS_TABLE         = aws_dynamodb_table.fourincorp_otps.name
-      DOCUMENT_BUCKET    = aws_s3_bucket.fourincorp_documents.id
-      APP_SECRET         = var.fourincorp_app_secret
-      ADMIN_EMAIL        = var.fourincorp_admin_email
-      STAFF_EMAILS       = join(",", var.fourincorp_staff_emails)
-      ALLOWED_ORIGIN     = local.fourincorp_allowed_origin
+      CLIENTS_TABLE         = aws_dynamodb_table.fourincorp_clients.name
+      APPLICATIONS_TABLE    = aws_dynamodb_table.fourincorp_applications.name
+      DOCUMENTS_TABLE       = aws_dynamodb_table.fourincorp_documents.name
+      PAYMENTS_TABLE        = aws_dynamodb_table.fourincorp_payments.name
+      MESSAGES_TABLE        = aws_dynamodb_table.fourincorp_messages.name
+      DOCUMENT_BUCKET       = aws_s3_bucket.fourincorp_documents.id
+      CLIENT_RECORDS_BUCKET = aws_s3_bucket.fourincorp_client_records.id
+      COGNITO_CLIENT_ID     = aws_cognito_user_pool_client.fourincorp_web.id
+      COGNITO_USER_POOL     = aws_cognito_user_pool.fourincorp.id
+      APP_SECRET            = var.fourincorp_app_secret
+      ADMIN_EMAIL           = var.fourincorp_admin_email
+      STAFF_EMAILS          = join(",", var.fourincorp_staff_emails)
+      ALLOWED_ORIGIN        = local.fourincorp_allowed_origin
     }
   }
 }
@@ -495,6 +553,28 @@ resource "aws_apigatewayv2_route" "fourincorp_root" {
   api_id    = aws_apigatewayv2_api.fourincorp.id
   route_key = "ANY /"
   target    = "integrations/${aws_apigatewayv2_integration.fourincorp_lambda.id}"
+}
+
+locals {
+  fourincorp_protected_routes = toset([
+    "POST /applications",
+    "GET /applications",
+    "GET /applications/{reference}",
+    "PATCH /applications/{reference}",
+    "POST /applications/{reference}/documents",
+    "POST /applications/{reference}/messages",
+    "POST /applications/{reference}/payments",
+  ])
+}
+
+resource "aws_apigatewayv2_route" "fourincorp_protected" {
+  for_each = local.fourincorp_protected_routes
+
+  api_id             = aws_apigatewayv2_api.fourincorp.id
+  route_key          = each.value
+  target             = "integrations/${aws_apigatewayv2_integration.fourincorp_lambda.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.fourincorp_cognito.id
 }
 
 resource "aws_apigatewayv2_stage" "fourincorp_prod" {
