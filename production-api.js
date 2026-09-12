@@ -315,13 +315,27 @@
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form).entries());
-    delete values.accountPassword;
-    delete values.confirmPassword;
+    const accountPassword = String(values.accountPassword || "");
+    const confirmPassword = String(values.confirmPassword || "");
+    const isGuestMode = document.body.classList.contains("guest-mode");
+    if (!isGuestMode && accountPassword !== confirmPassword) {
+      formMessage(form, "Passwords do not match.", "error");
+      return;
+    }
+    if (!isGuestMode && !strongPassword(accountPassword)) {
+      formMessage(form, passwordHint, "error");
+      return;
+    }
     delete values.password;
     try {
-      const submissionPath = sessionStorage.getItem(tokenKey) ? "/applications" : "/guest/applications";
+      const submissionPath = sessionStorage.getItem(tokenKey)
+        ? "/applications"
+        : isGuestMode
+          ? "/guest/applications"
+          : "/account/applications";
       const result = await request(submissionPath, { method: "POST", body: JSON.stringify(values) });
-      formMessage(form, `Application submitted. Order ${result.order_id}; reference ${result.reference}.`, "success");
+      const accountNote = result.confirmation_required ? " Check your email to confirm your client account." : "";
+      formMessage(form, `Application submitted. Order ${result.order_id}; reference ${result.reference}.${accountNote}`, "success");
       await loadApplications();
     } catch (error) {
       formMessage(form, error.message, "error");
