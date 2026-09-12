@@ -14,8 +14,15 @@ Invoke-RestMethod `
   -Body $body
 
   ## profiles commands
+  aws user login url:  https://424123860784.signin.aws.amazon.com/console
   aws configure list-profiles
   aws sso login --profile your-profile-name
+  Use this to list AWS CLI profiles, including SSO profiles:
+aws configure list-profiles
+If you want to see which ones are SSO-backed:
+Get-ChildItem ~/.aws/config | Select-String "^\[profile|sso_"
+Or on macOS/Linux:
+grep -E '^\[profile|sso_' ~/.aws/config
 
   terraform apply "recovery.tfplan"
 $distribution = terraform output -raw registration_cloudfront_id

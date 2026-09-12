@@ -298,6 +298,56 @@ def register(body):
     return response(201, {"user": public_user(user), "confirmation_required": not result.get("UserConfirmed", False)})
 
 
+def create_account_application(event):
+    body = body_from_event(event)
+    email = str(body.get("customerEmail") or body.get("email") or "").strip().lower()
+    password = str(body.get("accountPassword") or body.get("password") or "")
+    if not email or not password:
+        return response(400, {"message": "Email and account password are required"})
+
+    registration = register({
+        "email": email,
+        "password": password,
+        "firstName": body.get("firstName", ""),
+        "lastName": body.get("lastName", ""),
+        "phone": body.get("phone", ""),
+    })
+    if registration["statusCode"] == 409:
+        return response(409, {"message": "An account with this email already exists. Please sign in before submitting this application."})
+    if registration["statusCode"] >= 400:
+        return registration
+
+    client = client_by_email(email)
+    if not client:
+        return response(500, {"message": "Account was created but the client record was not found"})
+    client = ensure_client_id(client)
+    actor = {
+        "sub": client["user_id"],
+        "email": client["email"],
+        "role": "customer",
+        "name": client.get("name", ""),
+    }
+
+    try:
+        application = application_from_body(body, actor)
+        intake_prefix(application)
+    except ValueError as error:
+        return response(400, {"message": str(error)})
+
+    initialize_intake(application)
+    APPLICATIONS_TABLE.put_item(Item=application,
+        ConditionExpression="attribute_not_exists(application_id)")
+
+    registration_body = json.loads(registration["body"])
+    return response(201, {
+        "application": application,
+        "reference": application["reference"],
+        "order_id": application["order_id"],
+        "user": registration_body.get("user"),
+        "confirmation_required": registration_body.get("confirmation_required", True),
+    })
+
+
 def sync_authenticated_client(access_token):
     # Cognito, not an untrusted decoded JWT or request email, supplies identity.
     result = cognito.get_user(AccessToken=access_token)
@@ -692,6 +742,8 @@ def lambda_handler(event, context):
             return confirm_forgot_password(body_from_event(event))
         if method == "POST" and path in ("/applications", "/guest/applications"):
             return create_application(event)
+        if method == "POST" and path == "/account/applications":
+            return create_account_application(event)
         if method == "GET" and path == "/applications":
             return list_applications(event)
 
