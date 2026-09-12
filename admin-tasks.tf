@@ -1,0 +1,52 @@
+resource "aws_dynamodb_table" "staff_tasks" {
+  name         = "${var.fourincorp_stack_name}-staff-tasks"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "task_id"
+  attribute {
+    name = "task_id"
+    type = "S"
+  }
+  attribute {
+    name = "staff_id"
+    type = "S"
+  }
+  global_secondary_index {
+    name            = "staff-id-index"
+    hash_key        = "staff_id"
+    projection_type = "KEYS_ONLY"
+  }
+  point_in_time_recovery {
+    enabled = true
+  }
+  tags = { Application = "4incorp", Environment = var.fourincorp_environment }
+}
+
+resource "aws_iam_role_policy" "admin_tasks" {
+  role = aws_iam_role.fourincorp_lambda.id
+  name = "${var.fourincorp_stack_name}-admin-tasks"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      { Effect = "Allow", Action = ["dynamodb:Scan", "dynamodb:PutItem", "dynamodb:UpdateItem"], Resource = aws_dynamodb_table.staff_tasks.arn },
+      { Effect = "Allow", Action = ["cognito-idp:ListUsersInGroup"], Resource = aws_cognito_user_pool.fourincorp.arn }
+    ]
+  })
+}
+
+resource "aws_apigatewayv2_route" "admin_tasks" {
+  for_each           = toset(["GET /admin/overview", "POST /admin/tasks", "PATCH /admin/tasks/{task_id}"])
+  api_id             = aws_apigatewayv2_api.fourincorp.id
+  route_key          = each.value
+  target             = "integrations/${aws_apigatewayv2_integration.fourincorp_lambda.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.fourincorp_cognito.id
+}
+
+resource "aws_s3_object" "admin_progress_script" {
+  bucket        = aws_s3_bucket.fourincorp_frontend.id
+  key           = "admin-progress.js"
+  source        = "${path.module}/admin-progress.js"
+  source_hash   = filesha256("${path.module}/admin-progress.js")
+  content_type  = "application/javascript"
+  cache_control = "no-cache, max-age=0, must-revalidate"
+}

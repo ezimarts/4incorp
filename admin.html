@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>4incorp | Admin Portal</title>
+<link rel="stylesheet" href="/team-portal.css"><style>
+main{max-width:1440px}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}.metric{background:white;padding:22px;border:1px solid #d7e2ef;border-radius:10px}.metric strong{display:block;font-size:34px;color:#0d55c7}.metric span{color:#526173}.progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}progress{width:100%;accent-color:#0d55c7}.filters,.task-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;align-items:end}.task-form{background:white;padding:20px;border-radius:10px}.task-form button{margin-bottom:18px}select{padding:12px;max-width:100%;border:1px solid #b9c8d9;border-radius:6px;font:inherit}h2{margin-top:36px}.overdue{background:#fff2ec}th{white-space:nowrap}#updated{color:#526173;font-size:14px}
+</style></head>
+<body data-role="admin"><header><a href="/">4incorp.com</a><span>Admin portal</span></header>
+<main><section id="login"><h1>Admin sign in</h1><p>Use your authorized 4incorp team account.</p>
+<form id="teamLogin"><label>Email address<input name="email" type="email" autocomplete="username" required></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+<button type="submit">Sign in</button></form><p><a href="/#login">Return to the main website for account recovery</a></p></section>
+<p id="notice" role="status" aria-live="polite"></p>
+<section id="dashboard" hidden><div class="toolbar"><h1>Admin dashboard</h1><button id="refresh">Refresh</button><button id="logout">Sign out</button></div>
+<p id="identity"></p><p id="updated"></p>
+<div id="metrics" class="metrics"></div><h2>Application progress</h2><p>Current status distribution across all received applications.</p><div id="progress" class="progress-grid"></div>
+<div class="filters"><label>Find an application<input id="search" type="search" placeholder="Business, reference, client or state"></label><label>Status<select id="statusFilter"><option value="">All statuses</option></select></label></div>
+<div class="table"><table><thead><tr><th>Reference</th><th>Business</th><th>State</th><th>Type</th><th>Client</th><th>Status</th><th>Application owner</th><th>Received</th><th>Updated</th></tr></thead><tbody id="applications"></tbody></table></div>
+<h2>Staff workload</h2><div class="table"><table><thead><tr><th>Name</th><th>Email</th><th>Open</th><th>In progress</th><th>Overdue</th><th>Completed</th></tr></thead><tbody id="staffWork"></tbody></table></div>
+<h2>Assign a task</h2><form id="taskForm" class="task-form"><label>Application<select id="taskApplication" name="reference" required></select></label><label>Staff member<select id="taskStaff" name="staff_id" required></select></label><label>Task<input name="title" maxlength="200" placeholder="For example, review formation documents" required></label><label>Start date and time<input name="starts_at" type="datetime-local" required></label><label>Due date and time<input name="due_at" type="datetime-local" required></label><button type="submit">Assign task</button></form>
+<h2>Task schedule</h2><p>Overdue tasks are highlighted. Updating a task does not change the business application's filing status.</p><div class="table"><table><thead><tr><th>Task</th><th>Application</th><th>Assigned to</th><th>Start</th><th>Due</th><th>Status</th><th>Updated</th></tr></thead><tbody id="taskRows"></tbody></table></div></section>
+</main><script src="/config.js"></script><script src="/admin-progress.js"></script></body></html>

@@ -15,10 +15,6 @@
   }
 
   const tokenKey = "4incorpIdToken";
-  const recentlyUploaded = new Map();
-  function dashboardNotice(message) {
-    const note=document.querySelector('#userWorkspace .workspace-note');if(note)note.textContent=message;
-  }
 
   async function request(path, options = {}) {
     const token = sessionStorage.getItem(tokenKey);
@@ -62,7 +58,6 @@
   }
 
   function openClientDashboard(email) {
-    recentlyUploaded.clear();
     document.querySelectorAll(".workspace").forEach(workspace => workspace.classList.remove("active"));
     document.getElementById("userWorkspace")?.classList.add("active");
     const label = document.getElementById("loggedInUserEmail");
@@ -83,19 +78,16 @@
       const tbody = document.querySelector("#userWorkspace .demo-table tbody");
       if (!tbody) return;
       const applications = result.applications || [];
-      const counts=[applications.length,applications.filter(a=>!['Completed','Delivered','Cancelled'].includes(a.status)).length,applications.filter(a=>['Completed','Delivered'].includes(a.status)).length];
-      document.querySelectorAll('#userWorkspace .metric-card strong').forEach((el,i)=>el.textContent=i<3?String(counts[i]):'—');
-      dashboardNotice('Applications loaded from your account. Use Documents to view your files.');
       tbody.innerHTML = applications.length ? applications.map(application => `
         <tr>
           <td>${escapeHtml(application.reference)}</td>
           <td>${escapeHtml(application.preferred_name)}</td>
           <td>${escapeHtml(application.formation_state)}</td>
           <td><span class="tiny-status">${escapeHtml(application.status)}</span></td>
-          <td><button class="small-btn" type="button" onclick="window.fourincorpUploadDocument('${escapeHtml(application.reference)}')">Upload document</button> <button class="small-btn" type="button" onclick="window.fourincorpOpenDocuments('${escapeHtml(application.reference)}')">Documents</button></td>
+          <td><button class="small-btn" type="button" onclick="window.fourincorpUploadDocument('${escapeHtml(application.reference)}')">Upload document</button></td>
         </tr>`).join("") : '<tr><td colspan="5">No applications have been submitted yet.</td></tr>';
     } catch (error) {
-      dashboardNotice(`Unable to load applications: ${error.message}`);
+      console.error("Could not load applications", error);
     }
   }
 
@@ -106,8 +98,6 @@
     input.addEventListener("change", async () => {
       const file = input.files?.[0];
       if (!file) return;
-      if(file.size===0 || file.size>15*1024*1024){dashboardNotice('Choose a nonempty file no larger than 15 MB.');return;}
-      dashboardNotice(`Uploading ${file.name}…`);
       try {
         const result = await request(`/applications/${encodeURIComponent(reference)}/documents`, {
           method: "POST",
@@ -118,17 +108,9 @@
         uploadData.append("file", file);
         const uploadResponse = await fetch(result.upload.url, { method: "POST", body: uploadData });
         if (!uploadResponse.ok) throw new Error(`Document upload failed (${uploadResponse.status})`);
-        try {
-          const confirmed=await request(`/documents/${encodeURIComponent(result.document.document_id)}/complete`,{method:'POST',body:'{}'});
-          recentlyUploaded.set(confirmed.document.document_id,confirmed.document);
-          dashboardNotice('Document uploaded and verified.');
-        } catch(error) {
-          recentlyUploaded.set(result.document.document_id,{...result.document,type:result.document.content_type});
-          dashboardNotice(`File transferred, but confirmation failed: ${error.message}. Use Confirm upload in Documents.`);
-        }
-        openDocuments(reference);
+        window.alert("Document uploaded successfully.");
       } catch (error) {
-        dashboardNotice(`Upload failed: ${error.message}`);
+        window.alert(error.message);
       }
     }, { once: true });
     input.click();
@@ -202,7 +184,6 @@
     if (!form.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form));
     busy(form, async () => {
-      recentlyUploaded.clear();
       sessionStorage.removeItem(tokenKey);
       const result = await request("/auth/login", {method:"POST", body:JSON.stringify(values)});
       if (!result.id_token) throw new Error("Sign-in did not complete. Please try again.");
@@ -335,88 +316,5 @@
 
   if (typeof window.initEyeButtons === "function") window.initEyeButtons();
   window.fourincorpUploadDocument = uploadDocument;
-  // Live document viewer: no sample rows or editable manager controls.
-  const documentsDialog=document.createElement('dialog');
-  documentsDialog.style.cssText='width:min(1000px,95vw);max-height:85vh;border:1px solid #d7e2ef;border-radius:12px;padding:24px';
-  documentsDialog.setAttribute('aria-label','My Documents');
-  documentsDialog.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><h2>My Documents</h2><button type="button" data-close aria-label="Close documents">Close</button></div><p data-message role="status" aria-live="polite"></p><button type="button" data-refresh>Refresh documents</button><div style="overflow:auto"><table class="manager-table"><thead><tr><th>Reference</th><th>Document</th><th>Type</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>';
-  document.body.append(documentsDialog);
-  let documentReference='', documentGeneration=0;
-  const documentMessage=documentsDialog.querySelector('[data-message]');
-  documentsDialog.querySelector('[data-close]').addEventListener('click',()=>documentsDialog.close());
-  documentsDialog.addEventListener('close',()=>{documentGeneration++;documentsDialog.querySelector('tbody').replaceChildren();documentMessage.textContent='';});
-  async function refreshDocuments(){
-    const current=++documentGeneration;
-    const rows=documentsDialog.querySelector('tbody');rows.replaceChildren();documentMessage.textContent='Loading your documents…';
-    try {
-      if(!sessionStorage.getItem(tokenKey))throw new Error('Please sign in to view your documents.');
-      const result=await request('/documents');if(current!==documentGeneration)return;
-      const merged=new Map((result.documents||[]).map(d=>[d.document_id,d]));
-      for(const [id,doc] of recentlyUploaded){
-        const stored=merged.get(id);
-        if(!stored || (stored.status==='Waiting' && doc.status!=='Waiting'))merged.set(id,doc);
-        else recentlyUploaded.delete(id);
-      }
-      const docs=[...merged.values()].filter(d=>!documentReference||d.reference===documentReference);
-      documentMessage.textContent=docs.length?`${docs.length} document(s). Availability is checked when opened.`:'No documents have been added for this application or account yet.';
-      for(const doc of docs){
-        const row=document.createElement('tr');
-        for(const value of [doc.reference,doc.name,doc.type,doc.status]){const cell=document.createElement('td');cell.textContent=String(value||'—');row.append(cell);}
-        const actions=document.createElement('td');
-        for(const mode of ['view','download']){
-          const button=document.createElement('button');button.type='button';button.className='small-btn';button.textContent=mode==='view'?'View':'Download';
-          button.addEventListener('click',async()=>{
-            // Open synchronously so browsers don't block a new tab after the fetch.
-            const tab=window.open('about:blank','_blank');if(tab)tab.opener=null;
-            button.disabled=true;const active=documentGeneration;
-            try{const link=await request(`/documents/${encodeURIComponent(doc.document_id)}/download?mode=${mode}`);
-              if(active!==documentGeneration){tab?.close();return;}
-              const url=new URL(link.url);if(url.protocol!=='https:')throw new Error('Invalid document URL.');
-              if(tab)tab.location.replace(url.href);
-              else {documentMessage.textContent='Your browser blocked the new tab. ';const a=document.createElement('a');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Open document';documentMessage.append(a);}
-            }catch(error){tab?.close();if(active===documentGeneration)documentMessage.textContent=error.message;}
-            finally{button.disabled=false;}
-          });actions.append(button);
-        }
-        if(doc.status==='Waiting'){
-          const confirm=document.createElement('button');confirm.type='button';confirm.className='small-btn';confirm.textContent='Confirm upload';
-          confirm.addEventListener('click',async()=>{
-            confirm.disabled=true;const current=documentGeneration;
-            try{const result=await request(`/documents/${encodeURIComponent(doc.document_id)}/complete`,{method:'POST',body:'{}'});
-              if(current!==documentGeneration)return;recentlyUploaded.set(doc.document_id,result.document);await refreshDocuments();
-            }catch(error){if(current===documentGeneration)documentMessage.textContent=error.message;}finally{confirm.disabled=false;}
-          });actions.append(confirm);
-        }
-        row.append(actions);rows.append(row);
-      }
-    }catch(error){if(current===documentGeneration)documentMessage.textContent=error.message;}
-  }
-  function openDocuments(reference=''){
-    documentReference=reference;
-    if(typeof window.closeManager==='function')window.closeManager();
-    if(!documentsDialog.open)documentsDialog.showModal();
-    refreshDocuments();
-  }
-  documentsDialog.querySelector('[data-refresh]').addEventListener('click',refreshDocuments);
-  window.openUserDocumentsDirect=openDocuments;
-  window.renderUserDocuments=openDocuments;
-  window.fourincorpOpenDocuments=openDocuments;
-  const workspaceNote=document.querySelector('#userWorkspace .workspace-note');
-  if(workspaceNote){
-    const myDocuments=document.createElement('button');
-    myDocuments.type='button';myDocuments.className='small-btn';
-    myDocuments.id='clientMyDocuments';myDocuments.textContent='My Documents';
-    myDocuments.addEventListener('click',()=>openDocuments(''));
-    workspaceNote.after(myDocuments);
-  }
-  // Bypass legacy manager routing for the client's Quick Access documents button.
-  document.querySelectorAll('#userWorkspace .quick-item').forEach(button=>{
-    if(button.querySelector('strong')?.textContent.trim()==='Documents'){
-      button.removeAttribute('onclick');button.addEventListener('click',()=>openDocuments(''));
-    }
-  });
-  document.querySelectorAll('.workspace-logout').forEach(button=>button.addEventListener('click',()=>recentlyUploaded.clear()));
-  document.querySelectorAll('.workspace-logout').forEach(button=>button.addEventListener('click',()=>{if(documentsDialog.open)documentsDialog.close();}));
-
   window.fourincorpApi = { request, loadApplications, uploadDocument };
 })();

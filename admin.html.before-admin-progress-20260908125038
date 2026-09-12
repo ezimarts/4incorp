@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>4incorp | Admin Portal</title>
+<link rel="stylesheet" href="/team-portal.css"></head>
+<body data-role="admin"><header><a href="/">4incorp.com</a><span>Admin portal</span></header>
+<main><section id="login"><h1>Admin sign in</h1><p>Use your authorized 4incorp team account.</p>
+<form id="teamLogin"><label>Email address<input name="email" type="email" autocomplete="username" required></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+<button type="submit">Sign in</button></form><p><a href="/#login">Return to the main website for account recovery</a></p></section>
+<p id="notice" role="status" aria-live="polite"></p>
+<section id="dashboard" hidden><div class="toolbar"><h1>Admin dashboard</h1><button id="refresh">Refresh</button><button id="logout">Sign out</button></div>
+<p id="identity"></p><p>Applications available to your account</p><div class="table"><table><thead><tr><th>Reference</th><th>Business</th><th>State</th><th>Status</th><th>Client</th></tr></thead><tbody id="applications"></tbody></table></div></section>
+</main><script src="/config.js"></script><script src="/team-portal.js"></script></body></html>

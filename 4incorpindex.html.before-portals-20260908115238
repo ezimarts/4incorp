@@ -1,6 +1,5 @@
 
 
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -1471,7 +1470,7 @@
           <div class="login-copy">
             <span class="eyebrow">Secure portal access</span>
             <h2>One portal. Multiple ways to work with 4incorp.com.</h2>
-            <p>Clients can manage their filings, register an account, or start a guest application.</p>
+            <p>Customers can manage filings, administrators and staff can process applications, and guests can start without creating a password.</p>
             <div class="check-list">
               <span>Track application status in real time</span>
               <span>Upload and receive business documents</span>
@@ -1484,8 +1483,8 @@
             <div class="portal-tabs" role="tablist" aria-label="Login type">
               <button class="portal-tab active" type="button" data-portal="user">Client Login</button>
               <button class="portal-tab" type="button" data-portal="register">Register</button>
-              
-              
+              <button class="portal-tab" type="button" data-portal="admin">Admin Login</button>
+              <button class="portal-tab" type="button" data-portal="staff">Staff Login</button>
               <button class="portal-tab" type="button" data-portal="guest">Continue as Guest</button>
             </div>
 
@@ -1555,9 +1554,29 @@
                 </div>
               </div>
             </form>
-            
+            <form class="portal-pane" id="adminLoginForm" data-portal-pane="admin" novalidate>
+              <span class="portal-badge">Restricted Access</span><h3>Administrator Login</h3>
+              <p class="card-intro">Manage clients, applications, documents, staff assignments, payments, and status updates.</p>
+              <div class="demo-credentials"><strong>Frontend demo credentials</strong><br>Email: <code>admin@4incorp.com</code><br>Password: <code>Admin@123</code></div>
+              <div class="form-grid">
+                <div class="field full"><label>Admin email <span class="required">*</span></label><input name="email" type="email" required></div>
+                <div class="field full"><label>Password <span class="required">*</span></label><input name="password" type="password" minlength="8" required></div>
+                <div class="form-message" role="status"></div>
+                <div class="form-actions"><button class="primary" type="submit">Admin Sign In</button></div>
+              </div>
+            </form>
 
-            
+            <form class="portal-pane" id="staffLoginForm" data-portal-pane="staff" novalidate>
+              <span class="portal-badge">Staff Workspace</span><h3>Staff Login</h3>
+              <p class="card-intro">Review assigned applications, request documents, add notes, and update filing progress.</p>
+              <div class="demo-credentials"><strong>Frontend demo credentials</strong><br>Email: <code>staff@4incorp.com</code><br>Password: <code>Staff@123</code></div>
+              <div class="form-grid">
+                <div class="field full"><label>Staff email <span class="required">*</span></label><input name="email" type="email" required></div>
+                <div class="field full"><label>Password <span class="required">*</span></label><input name="password" type="password" minlength="8" required></div>
+                <div class="form-message" role="status"></div>
+                <div class="form-actions"><button class="primary" type="submit">Staff Sign In</button></div>
+              </div>
+            </form>
 
             <div class="portal-pane" data-portal-pane="guest">
               <span class="portal-badge">One-Time Guest</span><h3>Continue Without an Account</h3>
@@ -2104,10 +2123,10 @@
           <button class="primary" type="button" onclick="openApplicationPage('account','user')">Start New Application</button>
         </div>
         <div class="metric-grid">
-          <div class="metric-card"><span>Applications</span><strong>—</strong></div>
-          <div class="metric-card"><span>In Process</span><strong>—</strong></div>
-          <div class="metric-card"><span>Completed</span><strong>—</strong></div>
-          <div class="metric-card"><span>Unread Messages</span><strong>—</strong></div>
+          <div class="metric-card"><span>Applications</span><strong>2</strong></div>
+          <div class="metric-card"><span>In Process</span><strong>1</strong></div>
+          <div class="metric-card"><span>Completed</span><strong>1</strong></div>
+          <div class="metric-card"><span>Unread Messages</span><strong>2</strong></div>
         </div>
         <div class="workspace-grid">
           <div class="panel">
@@ -2115,7 +2134,10 @@
             <div class="table-wrap">
               <table class="demo-table">
                 <thead><tr><th>Reference</th><th>Business</th><th>State</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody><tr><td colspan="5">Loading your applications…</td></tr></tbody>
+                <tbody>
+                  <tr><td>4INC-24081301</td><td>Bright Future Consulting LLC</td><td>Delaware</td><td><span class="tiny-status">In Process</span></td><td><button class="action-link" type="button" onclick="beginUserRoute('application','4INC-24081301')">View</button></td></tr>
+                  <tr><td>4INC-24060118</td><td>North Star Media LLC</td><td>Wyoming</td><td><span class="tiny-status green">Completed</span></td><td><button class="action-link" type="button" onclick="beginUserRoute('documents','4INC-24060118')">Documents</button></td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -2123,18 +2145,114 @@
             <h3>Quick Access</h3>
             <div class="quick-list">
               <button class="quick-item action-link" type="button" onclick="beginUserRoute('documents','')"><strong>Documents</strong><span>View uploaded and completed filing documents.</span></button>
-              <button class="quick-item action-link" type="button" onclick="beginUserRoute('messages','')"><strong>Messages</strong><span>Messages from the formation team.</span></button>
+              <button class="quick-item action-link" type="button" onclick="beginUserRoute('messages','')"><strong>Messages</strong><span>2 unread messages from the formation team.</span></button>
               <button class="quick-item action-link" type="button" onclick="beginUserRoute('profile','')"><strong>Profile</strong><span>Update your contact information.</span></button>
             </div>
           </aside>
         </div>
-        <div class="workspace-note">Sign in to load your account records.</div>
+        <div class="workspace-note">Frontend demo only. These dashboard values are sample data until a backend is connected.</div>
       </div>
     </section>
 
-    
+    <section class="workspace" id="adminWorkspace" aria-label="Admin dashboard">
+      <div class="workspace-topbar">
+        <div class="container">
+          <div class="workspace-user">
+            <strong>4incorp.com</strong>
+            <span class="role-pill">ADMIN</span>
+            <span>admin@4incorp.com</span>
+          </div>
+          <button class="workspace-logout" type="button" onclick="closeManager();closeWorkspaces()">Log Out</button>
+        </div>
+      </div>
+      <div class="container workspace-body">
+        <div class="workspace-heading">
+          <div><h2>Admin Dashboard</h2><p>Manage applications, clients, staff, documents, payments, and filing status.</p></div>
+          <button class="secondary" type="button" onclick="openManager('applications')">Filter Applications</button>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Total Applications</span><strong>128</strong></div>
+          <div class="metric-card"><span>Under Review</span><strong>19</strong></div>
+          <div class="metric-card"><span>In Process</span><strong>34</strong></div>
+          <div class="metric-card"><span>Completed</span><strong>75</strong></div>
+        </div>
+        <div class="workspace-grid">
+          <div class="panel">
+            <h3>Recent Applications</h3>
+            <div class="table-wrap">
+              <table class="demo-table">
+                <thead><tr><th>Reference</th><th>Customer</th><th>Business</th><th>Assigned Staff</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>4INC-24081301</td><td>Alex Morgan</td><td>Bright Future Consulting LLC</td><td>Sarah M.</td><td><span class="tiny-status">In Process</span></td><td><button class="action-link" type="button" onclick="openManager('application','4INC-24081301')">Manage</button></td></tr>
+                  <tr><td>4INC-24081302</td><td>Jamie Lee</td><td>JL Ventures Inc.</td><td>Unassigned</td><td><span class="tiny-status orange">Under Review</span></td><td><button class="action-link" type="button" onclick="openManager('application','4INC-24081302')">Manage</button></td></tr>
+                  <tr><td>4INC-24081303</td><td>Chris Allen</td><td>Allen Creative LLC</td><td>Mike T.</td><td><span class="tiny-status green">Completed</span></td><td><button class="action-link" type="button" onclick="openManager('application','4INC-24081303')">Manage</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <aside class="panel">
+            <h3>Administration</h3>
+            <div class="quick-list">
+              <button class="quick-item action-link" type="button" onclick="openManager('clients')"><strong>Manage Clients</strong><span>Clients and account access.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openManager('staff')"><strong>Manage Staff</strong><span>Staff accounts and assignments.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openManager('payments')"><strong>Payments</strong><span>Payment and refund status.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openManager('documents')"><strong>Documents</strong><span>Customer and formation documents.</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="workspace-note">Frontend demo only. Admin actions currently show UI feedback and do not persist data.</div>
+      </div>
+    </section>
 
-    
+    <section class="workspace" id="staffWorkspace" aria-label="Staff dashboard">
+      <div class="workspace-topbar">
+        <div class="container">
+          <div class="workspace-user">
+            <strong>4incorp.com</strong>
+            <span class="role-pill">STAFF</span>
+            <span>staff@4incorp.com</span>
+          </div>
+          <button class="workspace-logout" type="button" onclick="closeManager();closeWorkspaces()">Log Out</button>
+        </div>
+      </div>
+      <div class="container workspace-body">
+        <div class="workspace-heading">
+          <div><h2>Staff Dashboard</h2><p>Review assigned applications, request documents, add notes, and update filing progress.</p></div>
+          <button class="secondary" type="button" onclick="openStaffManager('assigned','')">My Assigned Work</button>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Assigned</span><strong>18</strong></div>
+          <div class="metric-card"><span>Needs Review</span><strong>6</strong></div>
+          <div class="metric-card"><span>Waiting on Customer</span><strong>4</strong></div>
+          <div class="metric-card"><span>Completed Today</span><strong>3</strong></div>
+        </div>
+        <div class="workspace-grid">
+          <div class="panel">
+            <h3>Assigned Applications</h3>
+            <div class="table-wrap">
+              <table class="demo-table">
+                <thead><tr><th>Reference</th><th>Business</th><th>Customer</th><th>Status</th><th>Next Action</th></tr></thead>
+                <tbody>
+                  <tr><td>4INC-24081301</td><td>Bright Future Consulting LLC</td><td>Alex Morgan</td><td><span class="tiny-status">In Process</span></td><td><button class="action-link" type="button" onclick="openStaffManager('application','4INC-24081301')">Open</button></td></tr>
+                  <tr><td>4INC-24081277</td><td>Green Path Services LLC</td><td>Taylor Reed</td><td><span class="tiny-status orange">Documents Needed</span></td><td><button class="action-link" type="button" onclick="openStaffManager('request-docs','')">Request Docs</button></td></tr>
+                  <tr><td>4INC-24081219</td><td>Summit Labs Inc.</td><td>Jordan Hill</td><td><span class="tiny-status">Under Review</span></td><td><button class="action-link" type="button" onclick="openStaffManager('note','')">Add Note</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <aside class="panel">
+            <h3>Staff Tools</h3>
+            <div class="quick-list">
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('status','')"><strong>Update Status</strong><span>Move an application through the filing workflow.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('request-docs','')"><strong>Request Documents</strong><span>Ask a customer for missing files.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('note','')"><strong>Internal Notes</strong><span>Add staff-only notes to an application.</span></button>
+              <button class="quick-item action-link" type="button" onclick="openStaffManager('message','')"><strong>Message Customer</strong><span>Send an application-related message.</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="workspace-note">Frontend demo only. Staff actions are visual placeholders until APIs are connected.</div>
+      </div>
+    </section>
 
     <footer>
       <div class="container">
@@ -2234,7 +2352,9 @@
         document.querySelectorAll("[data-portal-pane]").forEach(p=>p.classList.toggle("active",p.dataset.portalPane===btn.dataset.portal));
       }));
       const demoCredentials = {
-        user: { workspace: "userWorkspace" }
+        user: { workspace: "userWorkspace" },
+        admin: { email: "admin@4incorp.com", password: "Admin@123", workspace: "adminWorkspace" },
+        staff: { email: "staff@4incorp.com", password: "Staff@123", workspace: "staffWorkspace" }
       };
 
       function openWorkspace(workspaceId) {
@@ -2255,7 +2375,9 @@
       }
 
       [
-        ["userLoginForm","user"]
+        ["userLoginForm","user"],
+        ["adminLoginForm","admin"],
+        ["staffLoginForm","staff"]
       ].forEach(([formId, role]) => {
         const form = document.getElementById(formId);
         form.addEventListener("submit", e => {

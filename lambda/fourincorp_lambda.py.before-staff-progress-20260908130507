@@ -61,42 +61,17 @@ def intake_prefix(application):
                      intake_component(application["user_id"]),
                      intake_component(application["application_id"]))) + "/"
 
-def intake_text(application):
-    """Render the complete intake record as readable UTF-8 text."""
-    lines = ["4INCORP Intake Application", "=========================", ""]
-
-    def append_value(label, value, indent=0):
-        prefix = " " * indent
-        if isinstance(value, dict):
-            lines.append(f"{prefix}{label}:" + (" (empty)" if not value else ""))
-            for key, child in value.items():
-                append_value(str(key), child, indent + 2)
-        elif isinstance(value, (list, tuple)):
-            lines.append(f"{prefix}{label}:" + (" (empty)" if not value else ""))
-            for index, child in enumerate(value, 1):
-                append_value(str(index), child, indent + 2)
-        else:
-            text = "" if value is None else ("Yes" if value is True else "No" if value is False else str(value))
-            parts = text.splitlines() or [""]
-            lines.append(f"{prefix}{label}: {parts[0]}")
-            lines.extend(f"{prefix}  {part}" for part in parts[1:])
-
-    for key, value in application.items():
-        append_value(str(key), value)
-    return "\n".join(lines) + "\n"
-
-
 def initialize_intake(application):
     prefix = intake_prefix(application)
     application["intake_prefix"] = prefix
     application["form_record_bucket"] = INTAKE_BUCKET
-    application["form_record_key"] = prefix + "intake/application.txt"
+    application["form_record_key"] = prefix + "intake/application.json"
     for folder in ("intake", "documents", "correspondence", "receipts", "completed"):
         s3.put_object(Bucket=INTAKE_BUCKET, Key=prefix + folder + "/", Body=b"",
                       ServerSideEncryption="AES256")
     s3.put_object(Bucket=INTAKE_BUCKET, Key=application["form_record_key"],
-                  Body=intake_text(application).encode("utf-8"),
-                  ContentType="text/plain; charset=utf-8", ServerSideEncryption="AES256")
+                  Body=json.dumps(application, default=json_default).encode("utf-8"),
+                  ContentType="application/json", ServerSideEncryption="AES256")
 
 
 def now_iso():
@@ -531,7 +506,15 @@ def list_applications(event):
             ScanIndexForward=False,
         ).get("Items", [])
     elif actor["role"] == "staff":
-        items = staff_applications(actor)
+        assigned = APPLICATIONS_TABLE.query(
+            IndexName="assigned-staff-index",
+            KeyConditionExpression=Key("assigned_staff_email").eq(actor["email"]),
+        ).get("Items", [])
+        unassigned = APPLICATIONS_TABLE.query(
+            IndexName="assigned-staff-index",
+            KeyConditionExpression=Key("assigned_staff_email").eq("unassigned"),
+        ).get("Items", [])
+        items = assigned + unassigned
     else:
         items = APPLICATIONS_TABLE.query(
             IndexName="customer-email-submitted-index",
@@ -559,8 +542,6 @@ def get_application(event, reference):
     application = get_application_by_reference(reference)
     if not application:
         return response(404, {"message": "Application not found"})
-    if actor["role"] == "staff" and not staff_can_access_application(actor, application):
-        return response(403, {"message": "This application is not assigned to you"})
     if actor["role"] == "customer" and application.get("customer_email") != actor["email"]:
         return response(403, {"message": "You cannot view this application"})
     return response(200, {"application": application})
@@ -573,14 +554,7 @@ def update_application(event, reference):
     application = get_application_by_reference(reference)
     if not application:
         return response(404, {"message": "Application not found"})
-    if actor["role"] == "staff" and not staff_can_access_application(actor, application):
-        return response(403, {"message": "This application is not assigned to you"})
     body = body_from_event(event)
-    if actor["role"] == "staff":
-        if set(body) - {"status", "note"}:
-            return response(403, {"message": "Only admins can reassign applications"})
-        if "status" in body and body["status"] not in STAFF_APPLICATION_STATUSES:
-            return response(400, {"message": "Invalid application status"})
     updates = {}
     for key in ["status", "assigned_staff_email"]:
         if key in body:
@@ -603,28 +577,6 @@ def update_application(event, reference):
     return response(200, {"application": result["Attributes"]})
 
 
-def client_document_prefix(application):
-    """Use the account name and immutable client ID from trusted records."""
-    import re
-    import unicodedata
-    client_id = application.get("client_id") or application.get("user_id")
-    if not client_id:
-        raise ValueError("Application has no client identifier")
-    client = {}
-    if application.get("user_id"):
-        client = CLIENTS_TABLE.get_item(
-            Key={"user_id": application["user_id"]}, ConsistentRead=True
-        ).get("Item") or {}
-    name = client.get("name") or " ".join(
-        str(client.get(field) or "").strip() for field in ("first_name", "last_name")
-    ).strip() or application.get("customer_name") or "client"
-    # Preserve international letters while replacing spaces and path punctuation.
-    name = unicodedata.normalize("NFKC", str(name)).casefold()
-    name = re.sub(r"[^\w]+", "-", name, flags=re.UNICODE).replace("_", "-")
-    name = re.sub(r"-+", "-", name).strip("-")[:80].rstrip("-") or "client"
-    return intake_component(client_id) + "/" + name + "/"
-
-
 def create_document_upload(event, reference):
     actor, error = require_actor(event)
     if error:
@@ -632,8 +584,6 @@ def create_document_upload(event, reference):
     application = get_application_by_reference(reference)
     if not application:
         return response(404, {"message": "Application not found"})
-    if actor["role"] == "staff" and not staff_can_access_application(actor, application):
-        return response(403, {"message": "This application is not assigned to you"})
     if actor["role"] == "customer" and (not actor.get("sub") or application.get("user_id") != actor["sub"]):
         return response(403, {"message": "You cannot add documents to this application"})
 
@@ -645,11 +595,11 @@ def create_document_upload(event, reference):
     document_id = str(uuid.uuid4())
     client_id = application.get("client_id") or application.get("user_id") or f"guest-{application['application_id']}"
     try:
-        key = client_document_prefix(application) + f"{document_id}/{file_name}"
+        key = intake_prefix(application) + f"documents/{document_id}/{file_name}"
     except ValueError as error:
         return response(400, {"message": str(error)})
     upload = s3.generate_presigned_post(
-        Bucket=DOCUMENT_BUCKET,
+        Bucket=INTAKE_BUCKET,
         Key=key,
         Fields={"Content-Type": content_type},
         Conditions=[{"Content-Type": content_type}, ["content-length-range", 1, 15 * 1024 * 1024]],
@@ -663,8 +613,7 @@ def create_document_upload(event, reference):
         "name": file_name,
         "content_type": content_type,
         "s3_key": key,
-        "s3_bucket": DOCUMENT_BUCKET,
-        "user_id": application.get("user_id", ""),
+        "s3_bucket": INTAKE_BUCKET,
         "status": "Waiting",
         "uploaded_by": actor["email"],
         "created_at": now_iso(),
@@ -681,8 +630,6 @@ def create_message(event, reference):
     application = get_application_by_reference(reference)
     if not application:
         return response(404, {"message": "Application not found"})
-    if actor["role"] == "staff" and not staff_can_access_application(actor, application):
-        return response(403, {"message": "This application is not assigned to you"})
     if actor["role"] == "customer" and application.get("customer_email") != actor["email"]:
         return response(403, {"message": "You cannot message this application"})
     body = body_from_event(event)
@@ -703,7 +650,7 @@ def create_message(event, reference):
 
 
 def create_payment(event, reference):
-    actor, error = require_actor(event, {"admin"})
+    actor, error = require_actor(event, {"admin", "staff"})
     if error:
         return error
     application = get_application_by_reference(reference)
@@ -834,232 +781,12 @@ def update_admin_task(event, task_id):
     return response(200, {"task": result["Attributes"]})
 
 
-STAFF_PERMISSIONS = [
-    {"action": "View tasks", "allowed": True, "scope": "Tasks assigned to your account"},
-    {"action": "Update task status, progress and work notes", "allowed": True, "scope": "Your open tasks; completed/cancelled tasks require admin reopening"},
-    {"action": "View applications and update filing status", "allowed": True, "scope": "Applications assigned directly to you or linked to your active tasks"},
-    {"action": "Upload documents and send application messages", "allowed": True, "scope": "Your assigned applications through the existing application API"},
-    {"action": "Assign tasks or change deadlines", "allowed": False, "scope": "Admin only"},
-    {"action": "Manage staff permissions or payments", "allowed": False, "scope": "Admin only"},
-    {"action": "View other staff members' tasks", "allowed": False, "scope": "Admin only"},
-]
-STAFF_APPLICATION_STATUSES = {"Submitted", "Under Review", "In Process", "Needs Information", "Filed", "Completed"}
-
-
-def assigned_staff_tasks(actor):
-    items, params = [], {"IndexName": "staff-id-index", "KeyConditionExpression": Key("staff_id").eq(actor["sub"])}
-    while True:
-        result = task_table().query(**params)
-        # Re-read the base record: GSI assignment changes are eventually consistent.
-        for indexed in result.get("Items", []):
-            item = task_table().get_item(Key={"task_id": indexed["task_id"]}, ConsistentRead=True).get("Item")
-            if item and item.get("staff_id") == actor["sub"]:
-                items.append(item)
-        if not result.get("LastEvaluatedKey"):
-            return items
-        params["ExclusiveStartKey"] = result["LastEvaluatedKey"]
-
-
-def staff_can_access_application(actor, application, tasks=None):
-    if actor.get("email") and application.get("assigned_staff_email", "").lower() == actor["email"].lower():
-        return True
-    tasks = assigned_staff_tasks(actor) if tasks is None else tasks
-    return any(t.get("application_id") == application["application_id"] and t.get("status") not in {"Completed", "Cancelled"} for t in tasks)
-
-
-def staff_applications(actor, tasks=None):
-    tasks = assigned_staff_tasks(actor) if tasks is None else tasks
-    ids = {t["application_id"] for t in tasks if t.get("status") not in {"Completed", "Cancelled"}}
-    if actor.get("email"):
-        params = {"IndexName":"assigned-staff-index", "KeyConditionExpression":Key("assigned_staff_email").eq(actor["email"])}
-        while True:
-            result = APPLICATIONS_TABLE.query(**params)
-            ids.update(a["application_id"] for a in result.get("Items", []))
-            if not result.get("LastEvaluatedKey"):
-                break
-            params["ExclusiveStartKey"] = result["LastEvaluatedKey"]
-    applications = []
-    for app_id in ids:
-        item = APPLICATIONS_TABLE.get_item(Key={"application_id":app_id},ConsistentRead=True).get("Item")
-        if item and staff_can_access_application(actor, item, tasks):
-            applications.append(item)
-    return applications
-
-
-def staff_overview(event):
-    actor, error = require_actor(event, {"staff"})
-    if error:
-        return error
-    tasks = assigned_staff_tasks(actor)
-    fields = ("application_id", "reference", "preferred_name", "formation_state", "status", "customer_name", "updated_at")
-    applications = [{k:a.get(k, "") for k in fields} for a in staff_applications(actor,tasks)]
-    return response(200, {"tasks": tasks, "applications": applications,
-        "permissions": STAFF_PERMISSIONS, "application_statuses": sorted(STAFF_APPLICATION_STATUSES),
-        "fetched_at": now_iso(), "staff_email": actor.get("email", "")})
-
-
-def update_staff_task(event, task_id):
-    actor, error = require_actor(event, {"staff"})
-    if error:
-        return error
-    body = body_from_event(event)
-    if set(body) - {"status", "progress", "note", "version"}:
-        return response(403, {"message": "You cannot change assignment, deadlines or task permissions"})
-    status, progress, version = body.get("status"), body.get("progress"), body.get("version")
-    note = str(body.get("note", "")).strip()
-    if status not in {"Assigned", "In progress", "Blocked", "Completed"} or type(progress) is not int or not 0 <= progress <= 100:
-        return response(400, {"message": "Choose a valid status and progress from 0 to 100"})
-    if type(version) is not int or version < 1 or len(note) > 2000:
-        return response(400, {"message": "Invalid task version or note longer than 2000 characters"})
-    if (status == "Completed" and progress != 100) or (status != "Completed" and progress == 100):
-        return response(400, {"message": "Use 100% only for completed tasks"})
-    if status == "Assigned" and progress != 0:
-        return response(400, {"message": "Select In progress or Blocked for work already started"})
-    if status == "Blocked" and not note:
-        return response(400, {"message": "Explain the blocker in the work note"})
-    try:
-        result = task_table().update_item(Key={"task_id":task_id},
-            UpdateExpression="SET #s=:s, progress=:p, work_note=:note, updated_at=:now, updated_by=:owner, #v=:next",
-            ConditionExpression="attribute_exists(task_id) AND staff_id=:owner AND #v=:old AND #s<>:completed AND #s<>:cancelled",
-            ExpressionAttributeNames={"#s":"status", "#v":"version"},
-            ExpressionAttributeValues={":s":status, ":p":progress, ":note":note, ":now":now_iso(),
-                ":owner":actor["sub"], ":next":version+1, ":old":version, ":completed":"Completed", ":cancelled":"Cancelled"},
-            ReturnValues="ALL_NEW")
-    except ClientError as exc:
-        if exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
-            return response(409, {"message": "Task changed, is closed or is not assigned to you. Refresh; ask an admin to reopen closed tasks."})
-        raise
-    return response(200, {"task":result["Attributes"]})
-
-
-def document_application_access(actor, application):
-    if not application:
-        return False
-    if actor["role"] == "admin":
-        return True
-    if actor["role"] == "staff":
-        return staff_can_access_application(actor, application)
-    return bool(actor.get("sub")) and application.get("user_id") == actor["sub"]
-
-
-def list_client_documents(event):
-    actor, error = require_actor(event)
-    if error:
-        return error
-    # Query candidate applications, then verify immutable ownership on base records.
-    params = {"IndexName":"customer-email-submitted-index", "KeyConditionExpression":Key("customer_email").eq(actor.get("email", ""))}
-    app_ids = set()
-    while True:
-        result = APPLICATIONS_TABLE.query(**params)
-        app_ids.update(a["application_id"] for a in result.get("Items", []))
-        if not result.get("LastEvaluatedKey"):
-            break
-        params["ExclusiveStartKey"] = result["LastEvaluatedKey"]
-    docs = []
-    for app_id in app_ids:
-        application = APPLICATIONS_TABLE.get_item(Key={"application_id":app_id},ConsistentRead=True).get("Item")
-        if not application or not actor.get("sub") or application.get("user_id") != actor["sub"]:
-            continue
-        params = {"IndexName":"application-created-index", "KeyConditionExpression":Key("application_id").eq(app_id)}
-        while True:
-            result = DOCUMENTS_TABLE.query(**params)
-            for item in result.get("Items", []):
-                if item.get("application_id") != app_id:
-                    continue
-                docs.append({"document_id":item["document_id"], "reference":application.get("reference", ""),
-                    "name":item.get("name", "Document"), "type":item.get("type") or item.get("content_type", "Document"),
-                    "status":item.get("status", "Unknown"), "created_at":item.get("created_at", "")})
-            if not result.get("LastEvaluatedKey"):
-                break
-            params["ExclusiveStartKey"] = result["LastEvaluatedKey"]
-    return response(200, {"documents":sorted(docs,key=lambda d:d["created_at"],reverse=True)})
-
-
-def document_download(event, document_id):
-    actor, error = require_actor(event)
-    if error:
-        return error
-    item = DOCUMENTS_TABLE.get_item(Key={"document_id":document_id},ConsistentRead=True).get("Item")
-    if not item or not item.get("application_id"):
-        return response(404, {"message":"Document not found"})
-    application = APPLICATIONS_TABLE.get_item(Key={"application_id":item["application_id"]},ConsistentRead=True).get("Item")
-    if not document_application_access(actor,application):
-        return response(404, {"message":"Document not found"})
-    bucket, key = item.get("s3_bucket"), item.get("s3_key")
-    if bucket not in {INTAKE_BUCKET, DOCUMENT_BUCKET, CLIENT_RECORDS_BUCKET} or not key:
-        return response(409, {"message":"The document has no valid stored file. Contact support."})
-    try:
-        metadata = s3.head_object(Bucket=bucket,Key=key)
-    except ClientError as exc:
-        if exc.response.get("Error",{}).get("Code") in {"404","NoSuchKey","NotFound"}:
-            return response(409, {"message":"File upload is not complete or the file is no longer available."})
-        return response(503, {"message":"The stored file cannot be accessed right now. Contact support."})
-    mode = (event.get("queryStringParameters") or {}).get("mode", "download")
-    content_type = metadata.get("ContentType", "application/octet-stream")
-    inline = mode == "view" and content_type in {"application/pdf","image/png","image/jpeg","image/gif","image/webp"}
-    # Encode the display filename instead of trusting it as a response header.
-    from urllib.parse import quote
-    name = str(item.get("name") or "document").replace("\\", "/").split("/")[-1]
-    disposition = ("inline" if inline else "attachment") + "; filename*=UTF-8''" + quote(name, safe="")
-    url = s3.generate_presigned_url("get_object", Params={"Bucket":bucket,"Key":key,
-        "ResponseContentDisposition":disposition,"ResponseContentType":content_type},ExpiresIn=120)
-    return response(200, {"url":url,"expires_in":120})
-
-
-def complete_document_upload(event, document_id):
-    actor, error = require_actor(event)
-    if error:
-        return error
-    item = DOCUMENTS_TABLE.get_item(Key={"document_id":document_id},ConsistentRead=True).get("Item")
-    if not item or not item.get("application_id"):
-        return response(404, {"message":"Document not found"})
-    application = APPLICATIONS_TABLE.get_item(Key={"application_id":item["application_id"]},ConsistentRead=True).get("Item")
-    if not document_application_access(actor,application):
-        return response(404, {"message":"Document not found"})
-    bucket,key=item.get("s3_bucket"),item.get("s3_key")
-    if bucket not in {INTAKE_BUCKET,DOCUMENT_BUCKET,CLIENT_RECORDS_BUCKET} or not key:
-        return response(409, {"message":"Invalid document storage record"})
-    try:
-        metadata=s3.head_object(Bucket=bucket,Key=key)
-    except ClientError:
-        return response(409, {"message":"Upload could not be verified in storage. Retry confirmation or contact support."})
-    if not 0 < metadata.get("ContentLength",0) <= 15*1024*1024:
-        return response(400, {"message":"The stored document must be between 1 byte and 15 MB"})
-    # Idempotent retry: preserve a later workflow status such as Ready to Download.
-    if item.get("status") == "Waiting":
-        try:
-            result=DOCUMENTS_TABLE.update_item(Key={"document_id":document_id},
-                UpdateExpression="SET #s=:received, uploaded_at=:now, updated_at=:now, file_size=:size",
-                ConditionExpression="application_id=:app AND s3_key=:key AND #s=:waiting",
-                ExpressionAttributeNames={"#s":"status"},
-                ExpressionAttributeValues={":received":"Received",":now":now_iso(),":size":metadata["ContentLength"],
-                    ":app":item["application_id"],":key":key,":waiting":"Waiting"},ReturnValues="ALL_NEW")
-            item=result["Attributes"]
-        except ClientError as exc:
-            if exc.response.get("Error",{}).get("Code") == "ConditionalCheckFailedException":
-                return response(409,{"message":"Document changed. Refresh and retry confirmation."})
-            raise
-    return response(200,{"document":{"document_id":document_id,"reference":application.get("reference",""),
-        "name":item.get("name","Document"),"type":item.get("content_type","Document"),
-        "status":item.get("status","Received"),"created_at":item.get("created_at","")}})
-
-
 def lambda_handler(event, context):
     method, path = route_from_event(event)
     if method == "OPTIONS":
         return response(200, {"message": "CORS OK"})
 
     try:
-        if method == "POST" and path.startswith("/documents/") and path.endswith("/complete"):
-            return complete_document_upload(event, path.split("/")[2])
-        if method == "GET" and path == "/documents":
-            return list_client_documents(event)
-        if method == "GET" and path.startswith("/documents/") and path.endswith("/download"):
-            return document_download(event, path.split("/")[2])
-        if method == "GET" and path == "/staff/overview":
-            return staff_overview(event)
-        if method == "PATCH" and path.startswith("/staff/tasks/"):
-            return update_staff_task(event, path.rsplit("/", 1)[-1])
         if method == "GET" and path == "/admin/overview":
             return admin_overview(event)
         if method == "POST" and path == "/admin/tasks":
