@@ -504,21 +504,25 @@ resource "aws_lambda_function" "fourincorp_api" {
   timeout          = 30
   memory_size      = 256
 
+  reserved_concurrent_executions = var.fourincorp_counter_cutover_pause ? 0 : -1
+
   environment {
     variables = {
-      CLIENTS_TABLE         = aws_dynamodb_table.fourincorp_clients.name
-      APPLICATIONS_TABLE    = aws_dynamodb_table.fourincorp_applications.name
-      DOCUMENTS_TABLE       = aws_dynamodb_table.fourincorp_documents.name
-      PAYMENTS_TABLE        = aws_dynamodb_table.fourincorp_payments.name
-      MESSAGES_TABLE        = aws_dynamodb_table.fourincorp_messages.name
-      DOCUMENT_BUCKET       = aws_s3_bucket.fourincorp_documents.id
-      CLIENT_RECORDS_BUCKET = aws_s3_bucket.fourincorp_client_records.id
-      COGNITO_CLIENT_ID     = aws_cognito_user_pool_client.fourincorp_web.id
-      COGNITO_USER_POOL     = aws_cognito_user_pool.fourincorp.id
-      APP_SECRET            = var.fourincorp_app_secret
-      ADMIN_EMAIL           = var.fourincorp_admin_email
-      STAFF_EMAILS          = join(",", var.fourincorp_staff_emails)
-      ALLOWED_ORIGIN        = local.fourincorp_allowed_origin
+      COUNTERS_TABLE           = data.aws_dynamodb_table.central_counters.name
+      CENTRAL_COUNTERS_ENABLED = tostring(var.fourincorp_central_counters_enabled)
+      CLIENTS_TABLE            = aws_dynamodb_table.fourincorp_clients.name
+      APPLICATIONS_TABLE       = aws_dynamodb_table.fourincorp_applications.name
+      DOCUMENTS_TABLE          = aws_dynamodb_table.fourincorp_documents.name
+      PAYMENTS_TABLE           = aws_dynamodb_table.fourincorp_payments.name
+      MESSAGES_TABLE           = aws_dynamodb_table.fourincorp_messages.name
+      DOCUMENT_BUCKET          = aws_s3_bucket.fourincorp_documents.id
+      CLIENT_RECORDS_BUCKET    = aws_s3_bucket.fourincorp_client_records.id
+      COGNITO_CLIENT_ID        = aws_cognito_user_pool_client.fourincorp_web.id
+      COGNITO_USER_POOL        = aws_cognito_user_pool.fourincorp.id
+      APP_SECRET               = var.fourincorp_app_secret
+      ADMIN_EMAIL              = var.fourincorp_admin_email
+      STAFF_EMAILS             = join(",", var.fourincorp_staff_emails)
+      ALLOWED_ORIGIN           = local.fourincorp_allowed_origin
     }
   }
 }

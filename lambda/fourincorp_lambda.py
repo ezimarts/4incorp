@@ -19,6 +19,8 @@ s3 = boto3.client("s3")
 cognito = boto3.client("cognito-idp")
 
 CLIENTS_TABLE = dynamodb.Table(os.environ["CLIENTS_TABLE"])
+CENTRAL_COUNTERS_ENABLED = os.environ.get("CENTRAL_COUNTERS_ENABLED", "false").lower() == "true"
+COUNTERS_TABLE = dynamodb.Table(os.environ["COUNTERS_TABLE"]) if os.environ.get("COUNTERS_TABLE") else None
 APPLICATIONS_TABLE = dynamodb.Table(os.environ["APPLICATIONS_TABLE"])
 DOCUMENTS_TABLE = dynamodb.Table(os.environ["DOCUMENTS_TABLE"])
 PAYMENTS_TABLE = dynamodb.Table(os.environ["PAYMENTS_TABLE"])
@@ -226,7 +228,21 @@ def client_by_email(email):
     return items[0] if items else None
 
 
+def next_central_number(table):
+    # Fail closed until the migration has seeded this sequence. Never reset it.
+    if COUNTERS_TABLE is None:
+        raise RuntimeError("Central counter storage is not configured")
+    result = COUNTERS_TABLE.update_item(
+        Key={"counter_name": table.name},
+        UpdateExpression="SET last_assigned=last_assigned+:one",
+        ConditionExpression="attribute_exists(last_assigned)",
+        ExpressionAttributeValues={":one": 1}, ReturnValues="UPDATED_NEW")
+    return int(result["Attributes"]["last_assigned"])
+
+
 def next_client_id():
+    if CENTRAL_COUNTERS_ENABLED:
+        return next_central_number(CLIENTS_TABLE)
     result = CLIENTS_TABLE.update_item(
         Key={"user_id": CLIENT_COUNTER_KEY},
         UpdateExpression="SET #last_client_id = if_not_exists(#last_client_id, :start) + :inc, #record_type = :record_type, #updated_at = :updated_at",
@@ -451,6 +467,8 @@ def confirm_forgot_password(body):
 
 
 def next_order_id():
+    if CENTRAL_COUNTERS_ENABLED:
+        return next_central_number(APPLICATIONS_TABLE)
     result = APPLICATIONS_TABLE.update_item(
         Key={"application_id": ORDER_COUNTER_KEY},
         UpdateExpression="SET #order_id = if_not_exists(#order_id, :start) + :inc, #record_type = :record_type, #updated_at = :updated_at",
