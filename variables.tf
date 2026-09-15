@@ -95,6 +95,18 @@ variable "fourincorp_staff_emails" {
   default     = []
 }
 
+variable "fourincorp_application_receipt_from_email" {
+  description = "Verified 4incorp sender address for automatic application receipts."
+  type        = string
+  default     = "no-reply@4incorp.com"
+}
+
+variable "fourincorp_application_receipt_reply_to_email" {
+  description = "Optional reply-to address for automatic application receipts. Leave blank for no-reply behavior."
+  type        = string
+  default     = ""
+}
+
 
 
 

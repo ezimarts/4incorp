@@ -490,6 +490,20 @@ resource "aws_iam_role_policy" "fourincorp_lambda" {
           "${aws_s3_bucket.fourincorp_client_records.arn}/*"
         ]
       }
+      ,
+      {
+        Effect = "Allow"
+        Action = ["ses:SendEmail"]
+        # SES evaluates a concrete sender address (no-reply@4incorp.com),
+        # rather than the verified parent-domain identity ARN.  Scope the
+        # action by FromAddress to retain least-privilege access.
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "ses:FromAddress" = var.fourincorp_application_receipt_from_email
+          }
+        }
+      }
     ]
   })
 }
@@ -508,21 +522,23 @@ resource "aws_lambda_function" "fourincorp_api" {
 
   environment {
     variables = {
-      COUNTERS_TABLE           = data.aws_dynamodb_table.central_counters.name
-      CENTRAL_COUNTERS_ENABLED = tostring(var.fourincorp_central_counters_enabled)
-      CLIENTS_TABLE            = aws_dynamodb_table.fourincorp_clients.name
-      APPLICATIONS_TABLE       = aws_dynamodb_table.fourincorp_applications.name
-      DOCUMENTS_TABLE          = aws_dynamodb_table.fourincorp_documents.name
-      PAYMENTS_TABLE           = aws_dynamodb_table.fourincorp_payments.name
-      MESSAGES_TABLE           = aws_dynamodb_table.fourincorp_messages.name
-      DOCUMENT_BUCKET          = aws_s3_bucket.fourincorp_documents.id
-      CLIENT_RECORDS_BUCKET    = aws_s3_bucket.fourincorp_client_records.id
-      COGNITO_CLIENT_ID        = aws_cognito_user_pool_client.fourincorp_web.id
-      COGNITO_USER_POOL        = aws_cognito_user_pool.fourincorp.id
-      APP_SECRET               = var.fourincorp_app_secret
-      ADMIN_EMAIL              = var.fourincorp_admin_email
-      STAFF_EMAILS             = join(",", var.fourincorp_staff_emails)
-      ALLOWED_ORIGIN           = local.fourincorp_allowed_origin
+      COUNTERS_TABLE                     = data.aws_dynamodb_table.central_counters.name
+      CENTRAL_COUNTERS_ENABLED           = tostring(var.fourincorp_central_counters_enabled)
+      CLIENTS_TABLE                      = aws_dynamodb_table.fourincorp_clients.name
+      APPLICATIONS_TABLE                 = aws_dynamodb_table.fourincorp_applications.name
+      DOCUMENTS_TABLE                    = aws_dynamodb_table.fourincorp_documents.name
+      PAYMENTS_TABLE                     = aws_dynamodb_table.fourincorp_payments.name
+      MESSAGES_TABLE                     = aws_dynamodb_table.fourincorp_messages.name
+      DOCUMENT_BUCKET                    = aws_s3_bucket.fourincorp_documents.id
+      CLIENT_RECORDS_BUCKET              = aws_s3_bucket.fourincorp_client_records.id
+      COGNITO_CLIENT_ID                  = aws_cognito_user_pool_client.fourincorp_web.id
+      COGNITO_USER_POOL                  = aws_cognito_user_pool.fourincorp.id
+      APP_SECRET                         = var.fourincorp_app_secret
+      ADMIN_EMAIL                        = var.fourincorp_admin_email
+      STAFF_EMAILS                       = join(",", var.fourincorp_staff_emails)
+      ALLOWED_ORIGIN                     = local.fourincorp_allowed_origin
+      APPLICATION_RECEIPT_FROM_EMAIL     = var.fourincorp_application_receipt_from_email
+      APPLICATION_RECEIPT_REPLY_TO_EMAIL = var.fourincorp_application_receipt_reply_to_email
     }
   }
 }

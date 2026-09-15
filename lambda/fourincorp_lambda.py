@@ -1,4 +1,5 @@
 import base64
+import html
 import hashlib
 import hmac
 import json
@@ -17,6 +18,7 @@ from boto3.dynamodb.conditions import Key
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 cognito = boto3.client("cognito-idp")
+ses = boto3.client("ses")
 
 CLIENTS_TABLE = dynamodb.Table(os.environ["CLIENTS_TABLE"])
 CENTRAL_COUNTERS_ENABLED = os.environ.get("CENTRAL_COUNTERS_ENABLED", "false").lower() == "true"
@@ -38,6 +40,8 @@ STAFF_EMAILS = {
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "*")
 COGNITO_CLIENT_ID = os.environ["COGNITO_CLIENT_ID"]
 COGNITO_USER_POOL = os.environ["COGNITO_USER_POOL"]
+APPLICATION_RECEIPT_FROM_EMAIL = os.environ.get("APPLICATION_RECEIPT_FROM_EMAIL", "").strip()
+APPLICATION_RECEIPT_REPLY_TO_EMAIL = os.environ.get("APPLICATION_RECEIPT_REPLY_TO_EMAIL", "").strip()
 ORDER_COUNTER_KEY = "__ORDER_COUNTER__"
 CLIENT_COUNTER_KEY = "__CLIENT_COUNTER__"
 
@@ -378,6 +382,7 @@ def create_account_application(event):
     initialize_intake(application)
     APPLICATIONS_TABLE.put_item(Item=application,
         ConditionExpression="attribute_not_exists(application_id)")
+    send_application_receipt(application)
 
     registration_body = json.loads(registration["body"])
     return response(201, {
@@ -562,6 +567,115 @@ def application_from_body(body, actor=None):
     }
 
 
+def send_application_receipt(application):
+    """Send a receipt after the application has been durably stored."""
+    recipient = str(application.get("customer_email") or "").strip()
+    if not APPLICATION_RECEIPT_FROM_EMAIL or not recipient:
+        return
+
+    customer_name = html.escape(str(application.get("customer_name") or "there"))
+    reference = html.escape(str(application.get("reference") or "Not available"))
+    business_name = html.escape(str(application.get("preferred_name") or "your business"))
+    subject = f"Your 4incorp application has been received{': ' + application['reference'] if application.get('reference') else ''}"
+    text_body = (
+        f"Hello {application.get('customer_name') or 'there'},\n\n"
+        "Thank you for submitting your business registration application with 4incorp.com.\n\n"
+        "We have received your application and it is now in process. "
+        "Our team will review the information provided and will contact you if any additional details are needed.\n\n"
+        "We will keep you posted on the progress of your application.\n\n"
+        f"Reference number: {application.get('reference') or 'Not available'}\n\n"
+        "Please keep this email for your records.\n\n"
+        "Thank you,\nThe 4incorp.com Team\n\n"
+        "This is an automated message from a no-reply email address. Please do not reply to this email."
+    )
+    html_body = f"""<!doctype html>
+<html><body style=\"font-family:Arial,sans-serif;line-height:1.5;color:#1f2937\">
+  <p>Hello {customer_name},</p>
+  <p>Thank you for submitting your business registration application with 4incorp.com.</p>
+  <p>We have received your application for <strong>{business_name}</strong> and it is now in process. Our team will review the information provided and will contact you if any additional details are needed.</p>
+  <p>We will keep you posted on the progress of your application.</p>
+  <p><strong>Reference number:</strong> {reference}</p>
+  <p>Please keep this email for your records.</p>
+  <p>Thank you,<br>The 4incorp.com Team</p>
+  <p style=\"color:#526173;font-size:13px\">This is an automated message from a no-reply email address. Please do not reply to this email.</p>
+</body></html>"""
+    request = {
+        "Source": APPLICATION_RECEIPT_FROM_EMAIL,
+        "Destination": {"ToAddresses": [recipient]},
+        "Message": {
+            "Subject": {"Data": subject, "Charset": "UTF-8"},
+            "Body": {
+                "Text": {"Data": text_body, "Charset": "UTF-8"},
+                "Html": {"Data": html_body, "Charset": "UTF-8"},
+            },
+        },
+    }
+    if APPLICATION_RECEIPT_REPLY_TO_EMAIL:
+        request["ReplyToAddresses"] = [APPLICATION_RECEIPT_REPLY_TO_EMAIL]
+    try:
+        ses.send_email(**request)
+    except ClientError as error:
+        # A send failure must not make a customer resubmit an application.
+        print("Application receipt email failed", application.get("reference", ""),
+              error.response.get("Error", {}).get("Code", "Unknown"))
+
+
+def send_case_update_notification(application, update_type, detail):
+    """Send a transactional notification for a customer-visible case event."""
+    recipient = str(application.get("customer_email") or "").strip()
+    if not APPLICATION_RECEIPT_FROM_EMAIL or not recipient:
+        return
+
+    customer_name = str(application.get("customer_name") or "there")
+    reference = str(application.get("reference") or "your application")
+    if update_type == "status":
+        subject = f"4incorp application update: {reference}"
+        summary = f"Your application status is now: {detail}."
+        heading = "Your application status has been updated"
+    else:
+        subject = f"New message about your 4incorp application: {reference}"
+        summary = "A member of the 4incorp team sent you a message:"
+        heading = "You have a new application message"
+
+    text_body = (
+        f"Hello {customer_name},\n\n{heading}.\n\n{summary}\n"
+        + (f"\n{detail}\n" if update_type == "message" else "")
+        + f"\nReference number: {reference}\n\nPlease sign in to your 4incorp account to view your application.\n\n"
+          "Thank you,\nThe 4incorp.com Team\n\n"
+          "This is an automated transactional message from a no-reply email address."
+    )
+    escaped_detail = html.escape(str(detail)).replace("\n", "<br>")
+    html_body = f"""<!doctype html>
+<html><body style=\"font-family:Arial,sans-serif;line-height:1.5;color:#1f2937\">
+  <p>Hello {html.escape(customer_name)},</p>
+  <p><strong>{html.escape(heading)}</strong></p>
+  <p>{html.escape(summary)}</p>
+  {f'<p>{escaped_detail}</p>' if update_type == 'message' else ''}
+  <p><strong>Reference number:</strong> {html.escape(reference)}</p>
+  <p>Please sign in to your 4incorp account to view your application.</p>
+  <p>Thank you,<br>The 4incorp.com Team</p>
+  <p style=\"color:#526173;font-size:13px\">This is an automated transactional message from a no-reply email address.</p>
+</body></html>"""
+    request = {
+        "Source": APPLICATION_RECEIPT_FROM_EMAIL,
+        "Destination": {"ToAddresses": [recipient]},
+        "Message": {
+            "Subject": {"Data": subject, "Charset": "UTF-8"},
+            "Body": {
+                "Text": {"Data": text_body, "Charset": "UTF-8"},
+                "Html": {"Data": html_body, "Charset": "UTF-8"},
+            },
+        },
+    }
+    if APPLICATION_RECEIPT_REPLY_TO_EMAIL:
+        request["ReplyToAddresses"] = [APPLICATION_RECEIPT_REPLY_TO_EMAIL]
+    try:
+        ses.send_email(**request)
+    except ClientError as error:
+        print("Case update email failed", reference,
+              error.response.get("Error", {}).get("Code", "Unknown"))
+
+
 def create_application(event):
     actor, error = require_actor(event)
     if error:
@@ -584,6 +698,7 @@ def create_application(event):
     initialize_intake(application)
     APPLICATIONS_TABLE.put_item(Item=application,
         ConditionExpression="attribute_not_exists(application_id)")
+    send_application_receipt(application)
     return response(201, {"application": application,
         "reference": application["reference"], "order_id": application["order_id"]})
 
@@ -668,7 +783,10 @@ def update_application(event, reference):
         ExpressionAttributeValues={f":{key}": value for key, value in updates.items()},
         ReturnValues="ALL_NEW",
     )
-    return response(200, {"application": result["Attributes"]})
+    updated_application = result["Attributes"]
+    if "status" in updates and updates["status"] != application.get("status"):
+        send_case_update_notification(updated_application, "status", updates["status"])
+    return response(200, {"application": updated_application})
 
 
 def client_document_prefix(application):
@@ -767,6 +885,8 @@ def create_message(event, reference):
         "created_at": now_iso(),
     }
     MESSAGES_TABLE.put_item(Item=item)
+    if actor["role"] in {"admin", "staff"}:
+        send_case_update_notification(application, "message", text)
     return response(201, {"message": item})
 
 

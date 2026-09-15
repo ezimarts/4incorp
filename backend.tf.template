@@ -1,0 +1,12 @@
+terraform {
+  required_version = ">= 1.10.0"
+  backend "s3" {
+    bucket              = "4incorp-s3-tfstate-424123860784-us-east-1"
+    key                 = "4incorp/terraform.tfstate"
+    region              = "us-east-1"
+    profile             = "4incorp"
+    allowed_account_ids = ["424123860784"]
+    encrypt             = true
+    use_lockfile        = true
+  }
+}
